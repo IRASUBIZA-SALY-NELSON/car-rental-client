@@ -30,7 +30,7 @@ const AddCar = () => {
     setIsLoading(true)
     try {
       const formData = new FormData()
-      formData.append('image', image)
+      formData.append('images', image)
       formData.append('carData', JSON.stringify(car))
 
       const {data} = await axios.post('/api/owner/add-car', formData)
@@ -143,10 +143,10 @@ const AddCar = () => {
             <label>Location</label>
             <select onChange={e=> setCar({...car, location: e.target.value})} value={car.location} className='px-3 py-2 mt-1 border border-borderColor rounded-md outline-none'>
               <option value="">Select a location</option>
-              <option value="New York">New York</option>
-              <option value="Los Angeles">Los Angeles</option>
-              <option value="Houston">Houston</option>
-              <option value="Chicago">Chicago</option>
+              <option value="Kigali">Kigali</option>
+              <option value="Musanze">Musanze</option>
+              <option value="Rubavu">Rubavu </option>
+              <option value="MUhanga">MUhanga</option>
             </select>
          </div>
         {/* Car Description */}

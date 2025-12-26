@@ -4,12 +4,15 @@ import { assets } from '../assets/assets'
 import CarCard from './CarCard'
 import { useNavigate } from 'react-router-dom'
 import { useAppContext } from '../context/AppContext'
+// eslint-disable-next-line no-unused-vars
 import { motion } from 'motion/react'
 
 const FeaturedSection = () => {
 
     const navigate = useNavigate()
     const {cars} = useAppContext()
+
+    console.log('📋 FeaturedSection - Cars:', cars)
 
   return (
     <motion.div 

@@ -16,8 +16,8 @@ const CarCard = ({car}) => {
         {car.isAvaliable && <p className='absolute top-4 left-4 bg-primary/90 text-white text-xs px-2.5 py-1 rounded-full'>Available Now</p>}
 
         <div className='absolute bottom-4 right-4 bg-black/80 backdrop-blur-sm text-white px-3 py-2 rounded-lg'>
-            <span className='font-semibold'>{currency}{car.pricePerDay}</span>
-            <span className='text-sm text-white/80'> / day</span>
+            <div className='text-xs'>Rent: <span className='font-semibold'>{currency}{car.pricePerDay}</span>/day</div>
+            <div className='text-xs'>Buy: <span className='font-semibold'>{currency}{car.purchasePrice}</span></div>
         </div>
       </div>
 
@@ -46,6 +46,22 @@ const CarCard = ({car}) => {
                 <img src={assets.location_icon} alt="" className='h-4 mr-2'/>
                 <span>{car.location}</span>
             </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className='mt-4 flex gap-2'>
+          <button 
+            onClick={(e) => { e.stopPropagation(); navigate(`/car-details/${car._id}?mode=rent`); }}
+            className='flex-1 bg-primary text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-primary-dull transition-colors'
+          >
+            Rent
+          </button>
+          <button 
+            onClick={(e) => { e.stopPropagation(); navigate(`/car-details/${car._id}?mode=buy`); }}
+            className='flex-1 bg-green-600 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-green-700 transition-colors'
+          >
+            Buy
+          </button>
         </div>
 
       </div>

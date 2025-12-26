@@ -5,13 +5,20 @@ import { Outlet } from 'react-router-dom'
 import { useAppContext } from '../../context/AppContext'
 
 const Layout = () => {
-  const {isOwner, navigate} = useAppContext()
+  const {isOwner, navigate, user, token} = useAppContext()
 
   useEffect(()=>{
-    if(!isOwner){
+    // Only redirect if we have user data and token, and user is not owner
+    if (token && user !== null && !isOwner){
       navigate('/')
     }
-  },[isOwner])
+  },[isOwner, user, token])
+  
+  // Show loading or nothing while user data is loading
+  if (token && user === null) {
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>
+  }
+  
   return (
     <div className='flex flex-col'>
       <NavbarOwner />

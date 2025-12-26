@@ -72,7 +72,8 @@ const ManageCars = () => {
             <tr>
               <th className="p-3 font-medium">Car</th>
               <th className="p-3 font-medium max-md:hidden">Category</th>
-              <th className="p-3 font-medium">Price</th>
+              <th className="p-3 font-medium">Rent Price</th>
+              <th className="p-3 font-medium max-md:hidden">Buy Price</th>
               <th className="p-3 font-medium max-md:hidden">Status</th>
               <th className="p-3 font-medium">Actions</th>
             </tr>
@@ -91,6 +92,7 @@ const ManageCars = () => {
 
                 <td className='p-3 max-md:hidden'>{car.category}</td>
                 <td className='p-3'>{currency}{car.pricePerDay}/day</td>
+                <td className='p-3 max-md:hidden'>{currency}{car.purchasePrice}</td>
 
                 <td className='p-3 max-md:hidden'>
                   <span className={`px-3 py-1 rounded-full text-xs ${car.isAvaliable ? 'bg-green-100 text-green-500' : 'bg-red-100 text-red-500'}`}>

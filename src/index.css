@@ -12,3 +12,9 @@
   --color-light: #F1F5F9;
   --color-borderColor: #c4c7d2;
 }
+
+@layer base {
+  html {
+    font-family: "Outfit", sans-serif;
+  }
+}

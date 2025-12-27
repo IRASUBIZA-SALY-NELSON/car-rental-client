@@ -4,6 +4,7 @@ import {toast} from 'react-hot-toast'
 import { useNavigate } from "react-router-dom";
 
 axios.defaults.baseURL = import.meta.env.VITE_BASE_URL
+console.log('🌐 Axios baseURL set to:', axios.defaults.baseURL)
 
 export const AppContext = createContext();
 
@@ -39,9 +40,12 @@ export const AppProvider = ({ children })=>{
 
     const fetchCars = async () =>{
         try {
+            console.log('🚗 Fetching cars from:', axios.defaults.baseURL + '/api/user/cars')
             const {data} = await axios.get('/api/user/cars')
+            console.log('✅ Cars data received:', data)
             data.success ? setCars(data.cars) : toast.error(data.message)
         } catch (error) {
+            console.error('❌ Error fetching cars:', error)
             toast.error(error.message)
         }
     }
@@ -61,6 +65,7 @@ export const AppProvider = ({ children })=>{
     useEffect(()=>{
         const token = localStorage.getItem('token')
         setToken(token)
+        console.log('🔄 Token from localStorage:', token)
         fetchCars()
     },[])
 

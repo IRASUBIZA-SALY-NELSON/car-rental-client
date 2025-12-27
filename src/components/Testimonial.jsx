@@ -12,7 +12,7 @@ const Testimonial = () => {
           testimonial: "I've rented cars from various companies, but the experience with CarRental was exceptional." 
         },
         { name: "John Smith", 
-          location: "New York, USA", 
+          location: "Kigali, Rwanda", 
           image: assets.testimonial_image_2, 
           testimonial: "CarRental made my trip so much easier. The car was delivered right to my door, and the customer service was fantastic!" 
         },

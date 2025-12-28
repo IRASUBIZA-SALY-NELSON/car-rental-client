@@ -19,12 +19,14 @@ const Hero = () => {
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     transition={{ duration: 0.8 }}
-    className='h-screen flex flex-col items-center justify-center gap-14 bg-light text-center'>
+    className='h-screen flex flex-col items-center justify-center gap-14 bg-light text-center pt-16 md:pt-8'>
 
-        <motion.h5 initial={{ y: 50, opacity: 0 }}
+        <motion.h1 initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-        className='text-4xl md:text-5xl font-semibold'>Welcome to ROD'S T COMPANY Ltd </motion.h5>
+        className='text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-primary px-4 md:px-8 max-w-4xl'>
+            Welcome to ROD'S T COMPANY Ltd
+        </motion.h1>
 
       <motion.form
       initial={{ scale: 0.95, opacity: 0, y: 50 }}

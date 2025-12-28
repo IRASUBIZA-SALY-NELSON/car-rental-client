@@ -7,26 +7,26 @@ const Testimonial = () => {
 
     const testimonials = [
         { name: "Emma Rodriguez",
-          location: "Barcelona, Spain",
+          location: "Kigali, Rwanda",
           image: assets.testimonial_image_1,
-          testimonial: "I've rented cars from various companies, but the experience with CarRental was exceptional."
+          testimonial: "I've rented cars from various companies, but the experience with ROD'S T COMPANY Ltd was exceptional."
         },
         { name: "John Smith",
           location: "Kigali, Rwanda",
           image: assets.testimonial_image_2,
-          testimonial: "CarRental made my trip so much easier. The car was delivered right to my door, and the customer service was fantastic!"
+          testimonial: "ROD'S T COMPANY Ltd made my trip so much easier. The car was delivered right to my door, and the customer service was fantastic!"
         },
         { name: "Ava Johnson",
-          location: "Sydney, Australia",
+          location: "Kigali, Rwanda",
           image: assets.testimonial_image_1,
-          testimonial: "I highly recommend CarRental! Their fleet is amazing, and I always feel like I'm getting the best deal with excellent service."
+          testimonial: "I highly recommend ROD'S T COMPANY Ltd! Their fleet is amazing, and I always feel like I'm getting the best deal with excellent service."
         }
     ];
 
   return (
     <div className="py-28 px-6 md:px-16 lg:px-24 xl:px-44">
 
-           <Title title="What Our Customers Say" subTitle="Discover why discerning travelers choose StayVenture for their luxury accommodations around the world."/>
+           <Title title="What Our Customers Say" subTitle="Discover why our customers trust ROD'S T COMPANY Ltd for their car rental and purchase needs."/>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-18">
                 {testimonials.map((testimonial, index) => (

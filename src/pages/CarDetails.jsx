@@ -5,18 +5,20 @@ import Loader from '../components/Loader';
 import { useAppContext } from '../context/AppContext';
 import toast from 'react-hot-toast';
 // eslint-disable-next-line no-unused-vars
-import { motion } from 'framer-motion'; // Correct import
+import { motion } from 'framer-motion';
+import Carousel from '../components/Carousel';
 
 const CarDetails = () => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
-  const { cars, axios, pickupDate, setPickupDate, returnDate, setReturnDate, currency, user, setShowLogin } = useAppContext();
+  const { cars, axios, pickupDate, setPickupDate, returnDate, setReturnDate, currency } = useAppContext();
   const navigate = useNavigate();
 
   const [car, setCar] = useState(null);
   const [location, setLocation] = useState('');
   const [phone, setPhone] = useState('');
   const [mode, setMode] = useState(searchParams.get('mode') || 'rent'); // 'rent' or 'buy'
+  // Carousel state is now managed by the Carousel component
 
   // Buy form state
   const [fullName, setFullName] = useState('');
@@ -38,35 +40,19 @@ const CarDetails = () => {
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
 
   // Find car from context or fallback to dummy data
-
+  
   useEffect(() => {
     let foundCar = cars.find((c) => c._id === id);
     if (!foundCar) {
       foundCar = dummyCarData.find((c) => c._id === id);
     }
     setCar(foundCar);
+  }, [cars, id]);
 
-    // If buy mode is selected but car doesn't have purchasePrice, switch to rent mode
-    if (mode === 'buy' && foundCar && !foundCar.purchasePrice) {
-      setMode('rent');
-    }
-  }, [cars, id, mode]);
+  // Carousel auto-play and navigation is now handled by the Carousel component
 
   const handleRentSubmit = async (e) => {
     e.preventDefault();
-
-    if (!user) {
-      toast.error('Please login to book a car');
-      setShowLogin(true);
-      return;
-    }
-
-    // Validate dates
-    if (new Date(returnDate) <= new Date(pickupDate)) {
-      toast.error('Return date must be after pickup date');
-      return;
-    }
-
     try {
       const { data } = await axios.post('/api/bookings/create', {
         car: id,
@@ -89,18 +75,6 @@ const CarDetails = () => {
 
   const handleBuySubmit = async (e) => {
     e.preventDefault();
-
-    if (!user) {
-      toast.error('Please login to purchase a car');
-      setShowLogin(true);
-      return;
-    }
-
-    if (!car?.purchasePrice) {
-      toast.error('Purchase price not available for this car');
-      return;
-    }
-
     try {
       const { data } = await axios.post('/api/purchases/create', {
         car: id,
@@ -162,15 +136,19 @@ const CarDetails = () => {
           transition={{ duration: 0.8 }}
           className="lg:col-span-2"
         >
-          {/* Car Image */}
-          <motion.img
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
-            src={car.image}
-            alt={`${car.brand} ${car.model}`}
-            className="w-full h-auto md:max-h-[550px] object-cover rounded-2xl mb-8 shadow-2xl"
-          />
+          {/* Car Image Carousel */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mb-8"
+          >
+            <Carousel 
+              images={car.images && car.images.length > 0 ? car.images : [assets.car_image1, assets.car_image2, assets.car_image3, assets.car_image4]}
+              autoPlay={true}
+              interval={5000}
+            />
+          </motion.div>
 
           <motion.div
             initial="hidden"
@@ -268,17 +246,10 @@ const CarDetails = () => {
             </button>
             <button
               type="button"
-              onClick={() => {
-                if (car?.purchasePrice) {
-                  setMode('buy');
-                } else {
-                  toast.error('This car is not available for purchase');
-                }
-              }}
-              disabled={!car?.purchasePrice}
+              onClick={() => setMode('buy')}
               className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${
                 mode === 'buy' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500'
-              } ${!car?.purchasePrice ? 'opacity-50 cursor-not-allowed' : ''}`}
+              }`}
             >
               Buy
             </button>
@@ -291,7 +262,7 @@ const CarDetails = () => {
             className="flex items-end gap-2"
           >
             <span className="text-4xl font-bold text-gray-900">
-              {currency}{mode === 'rent' ? car.pricePerDay : (car.purchasePrice || 'N/A')}
+              {currency}{mode === 'rent' ? car.pricePerDay : car.purchasePrice}
             </span>
             <span className="text-gray-500">{mode === 'rent' ? '/ day' : ''}</span>
           </motion.div>
@@ -330,7 +301,6 @@ const CarDetails = () => {
                     onChange={(e) => setReturnDate(e.target.value)}
                     type="date"
                     required
-                    min={pickupDate || new Date().toISOString().split('T')[0]}
                     className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
                   />
                 </motion.div>
@@ -381,7 +351,7 @@ const CarDetails = () => {
                   className="space-y-4"
                 >
                   <h3 className="font-semibold text-gray-800 border-b pb-2">Personal Information</h3>
-
+                  
                   <div className="grid grid-cols-1 gap-4">
                     <div className="flex flex-col gap-2">
                       <label className="font-medium text-gray-700">Full Name *</label>
@@ -443,7 +413,7 @@ const CarDetails = () => {
                   className="space-y-4"
                 >
                   <h3 className="font-semibold text-gray-800 border-b pb-2">Delivery Address</h3>
-
+                  
                   <div className="flex flex-col gap-2">
                     <label className="font-medium text-gray-700">Delivery Address *</label>
                     <textarea
@@ -509,7 +479,7 @@ const CarDetails = () => {
                   className="space-y-4"
                 >
                   <h3 className="font-semibold text-gray-800 border-b pb-2">Contact Information</h3>
-
+                  
                   <div className="grid grid-cols-1 gap-4">
                     <div className="flex flex-col gap-2">
                       <label className="font-medium text-gray-700">Primary Phone Number *</label>
@@ -556,7 +526,7 @@ const CarDetails = () => {
                   className="space-y-4"
                 >
                   <h3 className="font-semibold text-gray-800 border-b pb-2">Purchase Options</h3>
-
+                  
                   <div className="flex flex-col gap-2">
                     <label className="font-medium text-gray-700">Preferred Delivery Date *</label>
                     <input
@@ -618,7 +588,7 @@ const CarDetails = () => {
                   className="space-y-4"
                 >
                   <h3 className="font-semibold text-gray-800 border-b pb-2">Payment Information</h3>
-
+                  
                   <div className="flex flex-col gap-2">
                     <label className="font-medium text-gray-700">Payment Method</label>
                     <select
@@ -655,7 +625,7 @@ const CarDetails = () => {
                   className="space-y-4"
                 >
                   <h3 className="font-semibold text-gray-800 border-b pb-2">Legal Agreements</h3>
-
+                  
                   <div className="space-y-3">
                     <div className="flex items-start gap-3">
                       <input

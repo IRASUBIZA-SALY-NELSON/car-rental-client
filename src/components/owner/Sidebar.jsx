@@ -13,7 +13,7 @@ const Sidebar = () => {
     const updateImage = async ()=>{
         try {
           const formData = new FormData()
-          formData.append('images', image)
+          formData.append('image', image)
 
           const {data} = await axios.post('/api/owner/update-image', formData)
 

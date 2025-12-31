@@ -15,19 +15,17 @@ const Hero = () => {
     }
 
   return (
-    <motion.div
+    <motion.div 
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     transition={{ duration: 0.8 }}
-    className='h-screen flex flex-col items-center justify-center gap-14 bg-light text-center pt-16 md:pt-8'>
+    className='h-screen flex flex-col items-center justify-center gap-14 bg-light text-center'>
 
         <motion.h1 initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-        className='text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-primary px-4 md:px-8 max-w-4xl'>
-            Welcome to ROD'S T COMPANY Ltd
-        </motion.h1>
-
+        className='text-4xl md:text-5xl font-semibold'>Luxury cars on Rent</motion.h1>
+      
       <motion.form
       initial={{ scale: 0.95, opacity: 0, y: 50 }}
       animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -51,9 +49,9 @@ const Hero = () => {
                 <label htmlFor='return-date'>Return Date</label>
                 <input value={returnDate} onChange={e=>setReturnDate(e.target.value)} type="date" id="return-date" className='text-sm text-gray-500' required/>
             </div>
-
+            
         </div>
-            <motion.button
+            <motion.button 
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className='flex items-center justify-center gap-1 px-9 py-3 max-sm:mt-4 bg-primary hover:bg-primary-dull text-white rounded-full cursor-pointer'>
@@ -62,7 +60,7 @@ const Hero = () => {
             </motion.button>
       </motion.form>
 
-      <motion.img
+      <motion.img 
         initial={{ y: 100, opacity: 0 }}
        animate={{ y: 0, opacity: 1 }}
        transition={{ duration: 0.8, delay: 0.6 }}

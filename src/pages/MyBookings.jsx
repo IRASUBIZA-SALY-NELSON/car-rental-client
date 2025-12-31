@@ -136,18 +136,9 @@ const MyBookings = () => {
                     <img src={assets.location_icon_colored} alt="location" className="w-4 h-4 mt-1" />
                     <div>
                       <p className="text-gray-500">Pick-up Location</p>
-                      <p>{booking.location || booking.car.location}</p>
+                      <p>{booking.car.location}</p>
                     </div>
                   </div>
-                  {booking.phoneNumber && (
-                    <div className="flex items-start gap-2 mt-3">
-                      <img src={assets.location_icon_colored} alt="phone" className="w-4 h-4 mt-1" />
-                      <div>
-                        <p className="text-gray-500">Contact</p>
-                        <p>{booking.phoneNumber}</p>
-                      </div>
-                    </div>
-                  )}
                 </div>
 
                 {/* Price */}

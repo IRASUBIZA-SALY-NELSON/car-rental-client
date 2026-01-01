@@ -24,9 +24,12 @@ const CarCardNew = ({ car }) => {
   const navigate = useNavigate();
   // Function to get the appropriate set of images for each car
 // In CarCardNew.jsx
-const getCarImages = (car) => {
+    const getCarImages = (car) => {
+      console.log('Full car object:', JSON.stringify(car, null, 2));
+
   // First, try to get the carNumber from the car object
   const carNumber = car.carNumber || '1';
+  console.log(`Car ID: ${car._id}, Brand: ${car.brand}, Car Number: ${carNumber}`);
 
   // Log for debugging
   console.log(`Car ID: ${car._id}, Car Number: ${carNumber}`);

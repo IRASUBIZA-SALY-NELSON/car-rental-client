@@ -270,6 +270,25 @@ export const dummyCarData = [
         isAvailable: true,
         createdAt: new Date().toISOString()
     },
+    {
+        "_id": "car6_" + Math.random().toString(36).substr(2, 9),
+        "owner": "67fe3467ed8a8fe17d0ba6e2",
+        "carNumber":"6",
+        "brand": "Toyota",
+        "model": "Camry",
+        "images": [car6a, car6b, car6c, car6d, car6e, car6f],
+        "year": 2023,
+        "category": "Sedan",
+        seating_capacity: 5,
+        fuel_type: "Hybrid",
+        transmission: "Automatic",
+        pricePerDay: 180,
+        purchasePrice: 30000,
+        location: "Kigali",
+        description: "2023 Toyota Camry with excellent fuel efficiency and reliability.",
+        isAvailable: true,
+        createdAt: new Date().toISOString()
+    }
 ];
 
 export const dummyMyBookingsData = [
@@ -298,7 +317,6 @@ export const dummyMyBookingsData = [
     {
         "_id": "684800fa0fb481c5cfd92e56",
         "owner": "67fe3467ed8a8fe17d0ba6e2",
-        "carNumber":"3",
         "car": dummyCarData[2],
         "user": "6847f7cab3d8daecdb517095",
         "owner": "67fe3467ed8a8fe17d0ba6e2",
@@ -311,7 +329,6 @@ export const dummyMyBookingsData = [
     {
         "_id": "6847fe790fb481c5cfd92d94",
         "owner": "67fe3467ed8a8fe17d0ba6e2",
-        "carNumber":"4",
         "car": dummyCarData[3],
         "user": "6847f7cab3d8daecdb517095",
         "owner": "6847f7cab3d8daecdb517095",

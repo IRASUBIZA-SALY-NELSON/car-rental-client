@@ -41,8 +41,6 @@ import main_car6 from "./main_car6.png"
 import main_car7 from "./main_car7.png"
 import main_car8 from "./main_car8.png"
 import main_car9 from "./main_car9.png"
-
-
 import banner_car_image from "./banner_car_image.png"
 import user_profile from "./user_profile.png"
 import upload_icon from "./upload_icon.svg"
@@ -50,9 +48,6 @@ import car_image1 from "./car_image1.png"
 import car_image2 from "./car_image2.png"
 import car_image3 from "./car_image3.png"
 import car_image4 from "./car_image4.png"
-
-// special imports.
-
 import car1a from "./cars/1a.jpg";
 import car1b from "./cars/1b.jpg";
 import car1c from "./cars/1c.jpg";
@@ -84,9 +79,26 @@ import car6c from "./cars/6c.jpg";
 import car6d from "./cars/6d.jpg";
 import car6e from "./cars/6e.jpg";
 import car6f from "./cars/6f.jpg";
+import car7a from "./cars/7a.jpg";
+import car7b from "./cars/7b.jpg";
+import car7c from "./cars/7c.jpg";
+import car7d from "./cars/7d.jpg";
+import car8a from "./cars/8a.jpg";
+import car8b from "./cars/8b.jpg";
+import car8c from "./cars/8c.jpg";
+import car8d from "./cars/8d.jpg";
+import car8e from "./cars/8e.jpg";
+import car8f from "./cars/8f.jpg";
+import car8g from "./cars/8g.jpg";
+import car9a from "./cars/9a.jpg";
+import car9b from "./cars/9b.jpg";
+import car9c from "./cars/9c.jpg";
+import car9d from "./cars/9d.jpg";
+import car10a from "./cars/10a.jpg";
+import car10b from "./cars/10b.jpg";
+import car10c from "./cars/10c.jpg";
 
-
-export const cityList = ['Kigali', 'Musanze', 'Rubavu', 'MUhanga']
+export const cityList = ['Kigali', 'Musanze', 'Rubavu', 'Muhanga']
 
 export const assets = {
     logo,
@@ -170,6 +182,24 @@ export const assets = {
     car6d,
     car6e,
     car6f,
+    car7a,
+    car7b,
+    car7c,
+    car7d,
+    car8a,
+    car8b,
+    car8c,
+    car8d,
+    car8e,
+    car8f,
+    car8g,
+    car9a,
+    car9b,
+    car9c,
+    car9d,
+    car10a,
+    car10b,
+    car10c,
 };
 
 export const menuLinks = [
@@ -305,6 +335,83 @@ export const dummyCarData = [
         "purchasePrice": 30000,
         "location": "Kigali",
         "description": "2023 Toyota Land Cruiser Prado with excellent off-road capability and luxury features. Perfect for adventure seekers and family trips in style.",
+        "isAvailable": true,
+        "createdAt": new Date().toISOString()
+    },
+    {
+        "_id": "car7_" + Math.random().toString(36).substr(2, 9),
+        "owner": "67fe3467ed8a8fe17d0ba6e2",
+        "carNumber":"7",
+        "brand": "Honda",
+        "model": "Civic",
+        "images": [car7a, car7b, car7c, car7d],
+        "year": 2023,
+        "category": "Sedan",
+        "seating_capacity": "5",
+        "fuel_type": "Petrol",
+        "transmission": "Automatic",
+        "pricePerDay": 120,
+        "purchasePrice": 20000,
+        "location": "Kigali",
+        "description": "2023 Honda Civic with excellent fuel efficiency and reliability.",
+        "isAvailable": true,
+        "createdAt": new Date().toISOString()
+    },
+
+    {
+        "_id": "car8_" + Math.random().toString(36).substr(2, 9),
+        "owner": "67fe3467ed8a8fe17d0ba6e2",
+        "carNumber":"8",
+        "brand": "Ford",
+        "model": "Focus",
+        "images": [car8a, car8b, car8c, car8d, car8e, car8f, car8g],
+        "year": 2022,
+        "category": "Sedan",
+        "seating_capacity": "5",
+        "fuel_type": "Petrol",
+        "transmission": "Automatic",
+        "pricePerDay": 100,
+        "purchasePrice": 18000,
+        "location": "Kigali",
+        "description": "2022 Ford Focus with modern features and great handling.",
+        "isAvailable": true,
+        "createdAt": new Date().toISOString()
+    },
+    {
+        "_id": "car9_" + Math.random().toString(36).substr(2, 9),
+        "owner": "67fe3467ed8a8fe17d0ba6e2",
+        "carNumber":"9",
+        "brand": "BMW",
+        "model": "X3",
+        "images": [car9a, car9b, car9c, car9d],
+        "year": 2023,
+        "category": "SUV",
+        "seating_capacity": "5",
+        "fuel_type": "Diesel",
+        "transmission": "Automatic",
+        "pricePerDay": 250,
+        "purchasePrice": 45000,
+        "location": "Kigali",
+        "description": "2023 BMW X3 with premium features and luxury comfort.",
+        "isAvailable": true,
+        "createdAt": new Date().toISOString()
+    },
+    {
+        "_id": "car10_" + Math.random().toString(36).substr(2, 9),
+        "owner": "67fe3467ed8a8fe17d0ba6e2",
+        "carNumber":"10",
+        "brand": "Mercedes",
+        "model": "C-Class",
+        "images": [car10a, car10b, car10c],
+        "year": 2023,
+        "category": "Sedan",
+        "seating_capacity": "5",
+        "fuel_type": "Petrol",
+        "transmission": "Automatic",
+        "pricePerDay": 300,
+        "purchasePrice": 50000,
+        "location": "Kigali",
+        "description": "2023 Mercedes C-Class with luxury and performance.",
         "isAvailable": true,
         "createdAt": new Date().toISOString()
     }

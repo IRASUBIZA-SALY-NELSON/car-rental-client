@@ -26,7 +26,15 @@ const CarCardNew = ({ car }) => {
     case '5':
       return [assets.car5a, assets.car5b, assets.car5c];
     case '6':
-      return [assets.car6a, assets.car6b, assets.car6c, assets.car6d, assets.car6e, assets.car6f];
+          return [assets.car6a, assets.car6b, assets.car6c, assets.car6d, assets.car6e, assets.car6f];
+    case '7':
+          return [assets.car7a, assets.car7b, assets.car7c, assets.car7d, assets.car7e];
+    case '8':
+          return [assets.car8a, assets.car8b, assets.car8c, assets.car8d, assets.car8e];
+    case '9':
+          return [assets.car9a, assets.car9b, assets.car9c, assets.car9d];
+    case '10':
+          return [assets.car10a, assets.car10b, assets.car10c];
     default:
       console.warn(`No image set found for car number: ${carNumber}, using default images`);
       return [assets.car1a, assets.car1b, assets.car1c, assets.car1d, assets.car1e, assets.car1f];
@@ -70,7 +78,8 @@ console.log(`Using images for car ${car._id}:`, images);
             backgroundImage: `url(${image})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            transform: 'scale(1.2)'
+            backgroundRepeat: 'no-repeat',
+            backgroundAttachment: 'fixed'
           }}
         />
             </SwiperSlide>

@@ -15,7 +15,7 @@ const FeaturedSection = () => {
     console.log('📋 FeaturedSection - Cars:', cars)
 
   return (
-    <motion.div 
+    <motion.div
     initial={{ opacity: 0, y: 40 }}
     whileInView={{ opacity: 1, y: 0 }}
     transition={{ duration: 1, ease: "easeOut" }}
@@ -29,7 +29,7 @@ const FeaturedSection = () => {
             <Title title='Featured Vehicles' subTitle='Explore our selection of premium vehicles available for your next adventure.'/>
         </motion.div>
 
-        <motion.div 
+        <motion.div
         initial={{ opacity: 0, y: 100 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5, duration: 1 }}
@@ -47,7 +47,7 @@ const FeaturedSection = () => {
         }
         </motion.div>
 
-        <motion.button 
+        <motion.button
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6, duration: 0.4 }}
@@ -57,7 +57,7 @@ const FeaturedSection = () => {
          className='flex items-center justify-center gap-2 px-6 py-2 border border-borderColor hover:bg-gray-50 rounded-md mt-18 cursor-pointer'>
             Explore all cars <img src={assets.arrow_icon} alt="arrow" />
         </motion.button>
-      
+
     </motion.div>
   )
 }

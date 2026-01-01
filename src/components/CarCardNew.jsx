@@ -14,9 +14,9 @@ const CarCardNew = ({ car }) => {
   // Use assets car images for testing
   const images = car.images && car.images.length > 0 ? car.images : [
     assets.car1a,
-    assets.car1b,
-    assets.car1c,
-    assets.car1d
+    assets.car2a,
+    assets.car3a,
+    assets.car4a
   ];
 
   return (

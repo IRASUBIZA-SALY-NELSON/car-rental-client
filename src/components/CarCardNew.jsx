@@ -13,10 +13,10 @@ const CarCardNew = ({ car }) => {
 
   // Use assets car images for testing
   const images = car.images && car.images.length > 0 ? car.images : [
-    assets.car_image1,
-    assets.car_image2,
-    assets.car_image3,
-    assets.car_image4
+    assets.car1a,
+    assets.car1b,
+    assets.car1c,
+    assets.car1d
   ];
 
   return (
@@ -34,7 +34,7 @@ const CarCardNew = ({ car }) => {
           spaceBetween={0}
           slidesPerView={1}
           navigation
-          pagination={{ 
+          pagination={{
             clickable: true,
             dynamicBullets: true,
             dynamicMainBullets: 3

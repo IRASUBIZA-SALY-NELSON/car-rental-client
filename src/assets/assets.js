@@ -41,6 +41,42 @@ import car_image2 from "./car_image2.png"
 import car_image3 from "./car_image3.png"
 import car_image4 from "./car_image4.png"
 
+// special imports.
+
+import car1a from "./cars/1a.jpg";
+import car1b from "./cars/1b.jpg";
+import car1c from "./cars/1c.jpg";
+import car1d from "./cars/1d.jpg";
+import car1e from "./cars/1e.jpg";
+import car1f from "./cars/1f.jpg";
+import car1g from "./cars/1g.jpg";
+import car2a from "./cars/2a.jpg";
+import car2b from "./cars/2b.jpg";
+import car2c from "./cars/2c.jpg";
+import car2d from "./cars/2d.jpg";
+import car3a from "./cars/3a.jpg";
+import car3b from "./cars/3b.jpg";
+import car3c from "./cars/3c.jpg";
+import car3d from "./cars/3d.jpg";
+import car3e from "./cars/3e.jpg";
+import car3f from "./cars/3f.jpg";
+import car3g from "./cars/3g.jpg";
+import car4a from "./cars/4a.jpg";
+import car4b from "./cars/4b.jpg";
+import car4c from "./cars/4c.jpg";
+import car4d from "./cars/4d.jpg";
+import car4e from "./cars/4e.jpg";
+import car5a from "./cars/5a.jpg";
+import car5b from "./cars/5b.jpg";
+import car5c from "./cars/5c.jpg";
+import car6a from "./cars/6a.jpg";
+import car6b from "./cars/6b.jpg";
+import car6c from "./cars/6c.jpg";
+import car6d from "./cars/6d.jpg";
+import car6e from "./cars/6e.jpg";
+import car6f from "./cars/6f.jpg";
+
+
 export const cityList = ['Kigali', 'Musanze', 'Rubavu', 'MUhanga']
 
 export const assets = {
@@ -85,8 +121,37 @@ export const assets = {
     user_profile,
     car_image2,
     car_image3,
-    car_image4
-}
+    car_image4,
+    car1a,
+    car1b,
+    car1c,
+    car1d,
+    car2a,
+    car2b,
+    car2c,
+    car2d,
+    car3a,
+    car3b,
+    car3c,
+    car3d,
+    car3e,
+    car3f,
+    car3g,
+    car4a,
+    car4b,
+    car4c,
+    car4d,
+    car4e,
+    car5a,
+    car5b,
+    car5c,
+    car6a,
+    car6b,
+    car6c,
+    car6d,
+    car6e,
+    car6f,
+};
 
 export const menuLinks = [
     { name: "Home", path: "/" },
@@ -111,73 +176,93 @@ export const dummyUserData = {
 
 export const dummyCarData = [
     {
-        "_id": "67ff5bc069c03d4e45f30b77",
-        "owner": "67fe3467ed8a8fe17d0ba6e2",
-        "brand": "BMW",
-        "model": "X5",
-        "image": car_image1,
-        "year": 2006,
-        "category": "SUV",
-        "seating_capacity": 4,
-        "fuel_type": "Hybrid",
-        "transmission": "Semi-Automatic",
-        "pricePerDay": 300,
-        "location": "Kigali",
-        "description": "The BMW X5 is a mid-size luxury SUV produced by BMW. The X5 made its debut in 1999 as the first SUV ever produced by BMW.",
-        "isAvaliable": true,
-        "createdAt": "2025-04-16T07:26:56.215Z",
-    },
-    {
-        "_id": "67ff6b758f1b3684286a2a65",
+        "_id": "car1_" + Math.random().toString(36).substr(2, 9),
         "owner": "67fe3467ed8a8fe17d0ba6e2",
         "brand": "Toyota",
-        "model": "Corolla",
-        "image": car_image2,
-        "year": 2021,
-        "category": "Sedan",
-        "seating_capacity": 4,
-        "fuel_type": "Diesel",
-        "transmission": "Manual",
-        "pricePerDay": 130,
-        "location": "Chicago",
-        "description": "The Toyota Corolla is a mid-size luxury sedan produced by Toyota. The Corolla made its debut in 2008 as the first sedan ever produced by Toyota.",
-        "isAvaliable": true,
-        "createdAt": "2025-04-16T08:33:57.993Z",
-    },
-    {
-        "_id": "67ff6b9f8f1b3684286a2a68",
-        "owner": "67fe3467ed8a8fe17d0ba6e2",
-        "brand": "Jeep ",
-        "model": "Wrangler",
-        "image": car_image3,
-        "year": 2023,
-        "category": "SUV",
-        "seating_capacity": 4,
-        "fuel_type": "Hybrid",
-        "transmission": "Automatic",
-        "pricePerDay": 200,
-        "location": "Los Angeles",
-        "description": "The Jeep Wrangler is a mid-size luxury SUV produced by Jeep. The Wrangler made its debut in 2003 as the first SUV ever produced by Jeep.",
-        "isAvaliable": true,
-        "createdAt": "2025-04-16T08:34:39.592Z",
-    },
-    {
-        "_id": "68009c93a3f5fc6338ea7e34",
-        "owner": "67fe3467ed8a8fe17d0ba6e2",
-        "brand": "Ford",
-        "model": "Neo 6",
-        "image": car_image4,
+        "model": "Land Cruiser",
+        "images": [car1a, car1b, car1c, car1d],
         "year": 2022,
-        "category": "Sedan",
-        "seating_capacity": 2,
+        "category": "SUV",
+        "seating_capacity": 7,
         "fuel_type": "Diesel",
-        "transmission": "Semi-Automatic",
-        "pricePerDay": 209,
-        "location": "Musanze",
-        "description": "This is a mid-size luxury sedan produced by Toyota. The Corolla made its debut in 2008 as the first sedan ever produced by Toyota.",
-        "isAvaliable": true,
-        "createdAt": "2025-04-17T06:15:47.318Z",
-    }
+        "transmission": "Automatic",
+        "pricePerDay": 250,
+        "purchasePrice": 85000,
+        "location": "Kigali",
+        "description": "2022 Toyota Land Cruiser in excellent condition. Perfect for both city and off-road adventures.",
+        "isAvailable": true,
+        "createdAt": new Date().toISOString()
+    },
+    {
+        "_id": "car2_" + Math.random().toString(36).substr(2, 9),
+        "owner": "67fe3467ed8a8fe17d0ba6e2",
+        "brand": "Range Rover",
+        "model": "Sport",
+        "images": [car2a, car2b, car2c, car2d],
+        "year": 2023,
+        "category": "Luxury SUV",
+        "seating_capacity": 5,
+        "fuel_type": "Petrol",
+        "transmission": "Automatic",
+        "pricePerDay": 350,
+        "purchasePrice": 95000,
+        "location": "Kigali",
+        "description": "2023 Range Rover Sport with premium features and luxurious interior.",
+        "isAvailable": true,
+        "createdAt": new Date().toISOString()
+    },
+    {
+        "_id": "car3_" + Math.random().toString(36).substr(2, 9),
+        "owner": "67fe3467ed8a8fe17d0ba6e2",
+        "brand": "Mercedes-Benz",
+        "model": "GLE",
+        "images": [car3a, car3b, car3c, car3d, car3e, car3f, car3g],
+        "year": 2023,
+        "category": "Luxury SUV",
+        "seating_capacity": 5,
+        "fuel_type": "Petrol",
+        "transmission": "Automatic",
+        "pricePerDay": 300,
+        "purchasePrice": 90000,
+        "location": "Kigali",
+        "description": "2023 Mercedes-Benz GLE with advanced technology and premium comfort.",
+        "isAvailable": true,
+        "createdAt": new Date().toISOString()
+    },
+    {
+        id: "car4_" + Math.random().toString(36).substr(2, 9),
+        brand: "Audi",
+        model: "A4",
+        images: [car4a, car4b, car4c, car4d],
+        year: 2023,
+        category: "Sedan",
+        seating_capacity: 5,
+        fuel_type: "Petrol",
+        transmission: "Automatic",
+        pricePerDay: 280,
+        purchasePrice: 45000,
+        location: "Kigali",
+        description: "2023 Audi A4 with premium features and luxurious interior.",
+        isAvailable: true,
+        createdAt: new Date().toISOString()
+    },
+    {
+        id: "car5_" + Math.random().toString(36).substr(2, 9),
+        brand: "Honda",
+        model: "Civic",
+        images: [car5a, car5b, car5c],
+        year: 2023,
+        category: "Sedan",
+        seating_capacity: 5,
+        fuel_type: "Petrol",
+        transmission: "Automatic",
+        pricePerDay: 150,
+        purchasePrice: 25000,
+        location: "Kigali",
+        description: "2023 Honda Civic with excellent fuel efficiency and reliability.",
+        isAvailable: true,
+        createdAt: new Date().toISOString()
+    },
 ];
 
 export const dummyMyBookingsData = [

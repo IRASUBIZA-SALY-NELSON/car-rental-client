@@ -18,3 +18,42 @@
     font-family: "Outfit", sans-serif;
   }
 }
+/* Custom Swiper Navigation Arrows */
+.swiper-button-next,
+.swiper-button-prev {
+  --swiper-navigation-size: 24px;
+  width: 40px !important;
+  height: 40px !important;
+  background: transparent !important;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.swiper-button-next:after,
+.swiper-button-prev:after {
+  font-size: 20px !important;
+  color: #2563EB;
+  font-weight: bold;
+}
+
+.swiper-button-next:hover:after,
+.swiper-button-prev:hover:after {
+  color: #1E40AF; /* Slightly darker blue on hover */
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  --swiper-navigation-size: 16px; /* Reduced from 24px */
+  width: 30px !important;         /* Reduced from 40px */
+  height: 30px !important;        /* Reduced from 40px */
+  background: transparent !important;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.swiper-button-next:after,
+.swiper-button-prev:after {
+  font-size: 14px !important;     /* Reduced from 20px */
+  color: #2563EB;
+  font-weight: bold;
+}

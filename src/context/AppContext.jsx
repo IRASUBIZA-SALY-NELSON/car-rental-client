@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import axios from 'axios'
 import {toast} from 'react-hot-toast'
 import { useNavigate } from "react-router-dom";
+import { dummyCarData } from '../assets/assets';
 
 axios.defaults.baseURL = import.meta.env.VITE_BASE_URL
 console.log('🌐 Axios baseURL set to:', axios.defaults.baseURL)
@@ -38,17 +39,22 @@ export const AppProvider = ({ children })=>{
     }
     // Function to fetch all cars from the server
 
-    const fetchCars = async () =>{
-        try {
-            console.log('🚗 Fetching cars from:', axios.defaults.baseURL + '/api/user/cars')
-            const {data} = await axios.get('/api/user/cars')
-            console.log('✅ Cars data received:', data)
-            data.success ? setCars(data.cars) : toast.error(data.message)
-        } catch (error) {
-            console.error('❌ Error fetching cars:', error)
-            toast.error(error.message)
-        }
-    }
+    // const fetchCars = async () =>{
+    //     try {
+    //         console.log('🚗 Fetching cars from:', axios.defaults.baseURL + '/api/user/cars')
+    //         const {data} = await axios.get('/api/user/cars')
+    //         console.log('✅ Cars data received:', data)
+    //         data.success ? setCars(data.cars) : toast.error(data.message)
+    //     } catch (error) {
+    //         console.error('❌ Error fetching cars:', error)
+    //         toast.error(error.message)
+    //     }
+    // }  fetchCars();
+
+    const fetchCars = async () => {
+  console.log('Using local dummy car data');
+  setCars(dummyCarData); // Use local data directly
+};
 
     // Function to log out the user
     const logout = ()=>{
@@ -79,7 +85,7 @@ export const AppProvider = ({ children })=>{
 
     const value = {
         navigate, currency, axios, user, setUser,
-        token, setToken, isOwner, setIsOwner, fetchUser, showLogin, setShowLogin, logout, fetchCars, cars, setCars, 
+        token, setToken, isOwner, setIsOwner, fetchUser, showLogin, setShowLogin, logout, fetchCars, cars, setCars,
         pickupDate, setPickupDate, returnDate, setReturnDate
     }
 

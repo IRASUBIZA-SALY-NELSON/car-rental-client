@@ -49,7 +49,6 @@ import car1c from "./cars/1c.jpg";
 import car1d from "./cars/1d.jpg";
 import car1e from "./cars/1e.jpg";
 import car1f from "./cars/1f.jpg";
-import car1g from "./cars/1g.jpg";
 import car2a from "./cars/2a.jpg";
 import car2b from "./cars/2b.jpg";
 import car2c from "./cars/2c.jpg";
@@ -126,6 +125,8 @@ export const assets = {
     car1b,
     car1c,
     car1d,
+    car1e,
+    car1f,
     car2a,
     car2b,
     car2c,
@@ -181,7 +182,7 @@ export const dummyCarData = [
         "carNumber":"1",
         "brand": "Toyota",
         "model": "Land Cruiser",
-        "images": [car1a, car1b, car1c, car1d],
+        "images": [car1a, car1b, car1c, car1d, car1e, car1f],
         "year": 2022,
         "category": "SUV",
         "seating_capacity": 7,

@@ -7,37 +7,16 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
-// const CarCardNew = ({ car }) => {
-//   const currency = import.meta.env.VITE_CURRENCY;
-//   const navigate = useNavigate();
-
-//   // Use assets car images for testing
-//   const images = car.images && car.images.length > 0 ? car.images : [
-//     assets.car1a,
-//     assets.car2a,
-//     assets.car3a,
-//     assets.car4a
-//   ];
-
 const CarCardNew = ({ car }) => {
   const currency = import.meta.env.VITE_CURRENCY;
   const navigate = useNavigate();
-  // Function to get the appropriate set of images for each car
-// In CarCardNew.jsx
+
     const getCarImages = (car) => {
       console.log('Full car object:', JSON.stringify(car, null, 2));
-
-  // First, try to get the carNumber from the car object
   const carNumber = car.carNumber || '1';
-  console.log(`Car ID: ${car._id}, Brand: ${car.brand}, Car Number: ${carNumber}`);
-
-  // Log for debugging
-  console.log(`Car ID: ${car._id}, Car Number: ${carNumber}`);
-
-  // Return the appropriate image set based on the car number
   switch (carNumber) {
     case '1':
-      return [assets.car1a, assets.car1b, assets.car1c, assets.car1d, assets.car1e, assets.car1f, assets.car1g];
+      return [assets.car1a, assets.car1b, assets.car1c, assets.car1d, assets.car1e, assets.car1f];
     case '2':
       return [assets.car2a, assets.car2b, assets.car2c, assets.car2d];
     case '3':
@@ -50,11 +29,10 @@ const CarCardNew = ({ car }) => {
       return [assets.car6a, assets.car6b, assets.car6c, assets.car6d, assets.car6e, assets.car6f];
     default:
       console.warn(`No image set found for car number: ${carNumber}, using default images`);
-      return [assets.car1a, assets.car1b, assets.car1c, assets.car1d];
+      return [assets.car1a, assets.car1b, assets.car1c, assets.car1d, assets.car1e, assets.car1f];
   }
 };
 
-// Always use getCarImages for now to test
 const images = getCarImages(car);
 console.log(`Using images for car ${car._id}:`, images);
   return (
@@ -65,7 +43,6 @@ console.log(`Using images for car ${car._id}:`, images);
       }}
       className="group rounded-xl overflow-hidden shadow-lg hover:-translate-y-1 transition-all duration-500 cursor-pointer"
     >
-      {/* IMAGE SECTION WITH CAROUSEL */}
       <div className="relative h-48 overflow-hidden">
         <Swiper
           modules={[Navigation, Pagination, Autoplay]}
@@ -112,7 +89,6 @@ console.log(`Using images for car ${car._id}:`, images);
         </div>
       </div>
 
-      {/* DETAILS */}
       <div className="p-4">
         <h3 className="text-lg font-semibold">
           {car.brand} {car.model}
@@ -140,7 +116,6 @@ console.log(`Using images for car ${car._id}:`, images);
           </div>
         </div>
 
-        {/* ACTIONS */}
         <div className="mt-4 flex gap-2">
           <button
             onClick={(e) => {

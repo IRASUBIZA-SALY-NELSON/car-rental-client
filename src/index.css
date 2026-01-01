@@ -7,9 +7,11 @@
 }
 
 @theme {
-  --color-primary: #2563EB;
-  --color-primary-dull: #1F58D8;
-  --color-light: #F1F5F9;
+  --color-primary: #E6195D;
+  --color-primary-dull: #D32E64;
+  --color-secondary: #32044A;
+  --color-secondary-dull: #39124E;
+  --color-light: #F7E6F1;
   --color-borderColor: #c4c7d2;
 }
 
@@ -21,9 +23,9 @@
 /* Custom Swiper Navigation Arrows */
 .swiper-button-next,
 .swiper-button-prev {
-  --swiper-navigation-size: 24px;
-  width: 40px !important;
-  height: 40px !important;
+  --swiper-navigation-size: 5px;
+  width: 12px !important;
+  height: 12px !important;
   background: transparent !important;
   border-radius: 50%;
   transition: all 0.3s ease;
@@ -31,29 +33,57 @@
 
 .swiper-button-next:after,
 .swiper-button-prev:after {
-  font-size: 20px !important;
-  color: #2563EB;
+  font-size: 5px !important;
+  color: #E6195D;
   font-weight: bold;
 }
 
 .swiper-button-next:hover:after,
 .swiper-button-prev:hover:after {
-  color: #1E40AF; /* Slightly darker blue on hover */
+  color: #D32E64; /* Darker pink on hover */
 }
 
-.swiper-button-next,
-.swiper-button-prev {
-  --swiper-navigation-size: 16px; /* Reduced from 24px */
-  width: 30px !important;         /* Reduced from 40px */
-  height: 30px !important;        /* Reduced from 40px */
-  background: transparent !important;
-  border-radius: 50%;
-  transition: all 0.3s ease;
+/* Custom Swiper Pagination Bullets */
+.swiper-pagination-bullet {
+  background: #32044A !important;
+  opacity: 0.5 !important;
+  transition: all 0.3s ease !important;
 }
 
-.swiper-button-next:after,
-.swiper-button-prev:after {
-  font-size: 14px !important;     /* Reduced from 20px */
-  color: #2563EB;
-  font-weight: bold;
+.swiper-pagination-bullet-active {
+  background: #E6195D !important;
+  opacity: 1 !important;
+  transform: scale(1.2) !important;
+}
+
+.swiper-pagination-bullet:hover {
+  background: #D32E64 !important;
+  opacity: 0.8 !important;
+}
+
+/* Dynamic Bullets */
+.swiper-pagination-bullet-dynamic {
+  background: #32044A !important;
+}
+
+.swiper-pagination-bullet-dynamic-active {
+  background: #E6195D !important;
+}
+
+/* Thumbnail Carousel */
+.thumbnail-swiper .swiper-slide-thumb-active {
+  border-color: #E6195D !important;
+}
+
+.thumbnail-swiper .swiper-slide {
+  border-color: #32044A !important;
+}
+
+/* Featured Cars Carousel */
+.featured-cars-swiper .swiper-pagination-bullet {
+  background: #39124E !important;
+}
+
+.featured-cars-swiper .swiper-pagination-bullet-active {
+  background: #E6195D !important;
 }

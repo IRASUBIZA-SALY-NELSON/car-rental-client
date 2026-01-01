@@ -31,7 +31,7 @@ const Footer = () => {
                         transition={{ duration: 0.5, delay: 0.4 }}
 
                     className='max-w-80 mt-3'>
-                        Premium car rental service with a wide selection of luxury and everyday vehicles for all your driving needs.
+                        Premium car rental service with ROD'S T COMPANY Ltd - Your trusted partner for quality vehicles.
                     </motion.p>
                     <motion.div
                         initial={{ opacity: 0 }}
@@ -42,7 +42,7 @@ const Footer = () => {
                         <a href="#"> <img src={assets.facebook_logo} className='w-5 h-5' alt="" /> </a>
                         <a href="#"> <img src={assets.instagram_logo} className='w-5 h-5' alt="" /> </a>
                         <a href="#"> <img src={assets.twitter_logo} className='w-5 h-5' alt="" /> </a>
-                        <a href="#"> <img src={assets.gmail_logo} className='w-5 h-5' alt="" /> </a>
+                        <a href="mailto:rodistcompanyltd@gmail.com"> <img src={assets.gmail_logo} className='w-5 h-5' alt="Email" /> </a>
                     </motion.div>
                 </div>
 
@@ -64,21 +64,27 @@ const Footer = () => {
                 </div>
 
                 <div>
-                    <h2 className='text-base font-medium text-gray-800 uppercase'>Resources</h2>
+                    <h2 className='text-base font-medium text-gray-800 uppercase'>Company Info</h2>
                     <ul className='mt-3 flex flex-col gap-1.5'>
-                        <li><a href="#">Help Center</a></li>
-                        <li><a href="#">Terms of Service</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Insurance</a></li>
+                        <li><strong>ROD'S T COMPANY Ltd</strong></li>
+                        <li>TIN: 123240168</li>
+                        <li>Bank: Bank of Africa</li>
+                        <li>Account: 02823900003</li>
                     </ul>
                 </div>
 
                 <div>
                     <h2 className='text-base font-medium text-gray-800 uppercase'>Contact</h2>
+<<<<<<< HEAD
                       <ul className='mt-3 flex flex-col gap-1.5'>
                         <li>Rod's Transport Company Ltd</li>
                         <li>Gisozi, Gacuriro, Rwanda</li>
                         <li>+250 788 888 577</li>
+=======
+                    <ul className='mt-3 flex flex-col gap-1.5'>
+                        <li>Gakiriro / Gisozi</li>
+                        <li>0788888577 / 0788851520</li>
+>>>>>>> 16e3ff8 (Describe your changes here)
                         <li>rodistcompanyltd@gmail.com</li>
                     </ul>
                 </div>
@@ -89,7 +95,11 @@ const Footer = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.6 }}
             className='flex flex-col md:flex-row gap-2 items-center justify-between py-5'>
+<<<<<<< HEAD
                 <p>© {new Date().getFullYear()} Rod's Transport Company Ltd. All rights reserved.</p>
+=======
+                <p>© {new Date().getFullYear()} ROD'S T COMPANY Ltd. All rights reserved.</p>
+>>>>>>> 16e3ff8 (Describe your changes here)
                 <ul className='flex items-center gap-4'>
                     <li><a href="#">Privacy</a></li>
                     <li>|</li>

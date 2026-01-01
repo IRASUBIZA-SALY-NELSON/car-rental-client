@@ -64,11 +64,15 @@ console.log(`Using images for car ${car._id}:`, images);
         >
           {images.map((image, index) => (
             <SwiperSlide key={index}>
-              <img
-                src={image}
-                alt={`${car.brand} ${car.model} - View ${index + 1}`}
-                className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105"
-              />
+       <div
+          className="w-full h-full"
+          style={{
+            backgroundImage: `url(${image})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            transform: 'scale(1.2)'
+          }}
+        />
             </SwiperSlide>
           ))}
         </Swiper>

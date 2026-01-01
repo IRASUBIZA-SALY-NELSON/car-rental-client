@@ -32,7 +32,17 @@ import calendar_icon_colored from "./calendar_icon_colored.svg"
 import location_icon_colored from "./location_icon_colored.svg"
 import testimonial_image_1 from "./testimonial_image_1.png"
 import testimonial_image_2 from "./testimonial_image_2.png"
-import main_car from "./main_car.png"
+import main_car1 from "./main_car1.png"
+import main_car2 from "./main_car2.png"
+import main_car3 from "./main_car3.png"
+import main_car4 from "./main_car4.png"
+import main_car5 from "./main_car5.png"
+import main_car6 from "./main_car6.png"
+import main_car7 from "./main_car7.png"
+import main_car8 from "./main_car8.png"
+import main_car9 from "./main_car9.png"
+
+
 import banner_car_image from "./banner_car_image.png"
 import user_profile from "./user_profile.png"
 import upload_icon from "./upload_icon.svg"
@@ -113,7 +123,15 @@ export const assets = {
     filter_icon,
     testimonial_image_1,
     testimonial_image_2,
-    main_car,
+    main_car1,
+    main_car2,
+    main_car3,
+    main_car4,
+    main_car5,
+    main_car6,
+    main_car7,
+    main_car8,
+    main_car9,
     banner_car_image,
     car_image1,
     upload_icon,

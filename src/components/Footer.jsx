@@ -75,18 +75,15 @@ const Footer = () => {
 
                 <div>
                     <h2 className='text-base font-medium text-gray-800 uppercase'>Contact</h2>
-<<<<<<< HEAD
-                      <ul className='mt-3 flex flex-col gap-1.5'>
+                      <ul
+                          className='mt-3 flex flex-col gap-1.5'>
                         <li>Rod's Transport Company Ltd</li>
                         <li>Gisozi, Gacuriro, Rwanda</li>
                         <li>+250 788 888 577</li>
-=======
-                    <ul className='mt-3 flex flex-col gap-1.5'>
                         <li>Gakiriro / Gisozi</li>
                         <li>0788888577 / 0788851520</li>
->>>>>>> 16e3ff8 (Describe your changes here)
                         <li>rodistcompanyltd@gmail.com</li>
-                    </ul>
+                      </ul>
                 </div>
                 </motion.div>
             </motion.div>
@@ -95,11 +92,7 @@ const Footer = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.6 }}
             className='flex flex-col md:flex-row gap-2 items-center justify-between py-5'>
-<<<<<<< HEAD
-                <p>© {new Date().getFullYear()} Rod's Transport Company Ltd. All rights reserved.</p>
-=======
                 <p>© {new Date().getFullYear()} ROD'S T COMPANY Ltd. All rights reserved.</p>
->>>>>>> 16e3ff8 (Describe your changes here)
                 <ul className='flex items-center gap-4'>
                     <li><a href="#">Privacy</a></li>
                     <li>|</li>

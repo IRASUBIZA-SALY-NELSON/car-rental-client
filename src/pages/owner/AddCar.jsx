@@ -103,9 +103,9 @@ const AddCar = () => {
             {/* Car Image Upload */}
             <div className='space-y-2'>
               <label className='block text-sm font-medium text-gray-700'>Car Photos (Multiple)</label>
-              <div className='grid grid-cols-2 md:grid-cols-3 gap-4'>
+              <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
                 {images.map((image, index) => (
-                  <div key={index} className='relative group'>
+                  <div key={index} className='relative group col-span-1'>
                     <img
                       src={URL.createObjectURL(image)}
                       alt={`Car photo ${index + 1}`}
@@ -124,7 +124,7 @@ const AddCar = () => {
                 {images.length < 5 && (
                   <div
                     onClick={() => fileInputRef.current?.click()}
-                    className={`mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
+                    className={`col-span-2 ${images.length === 0 ? 'md:col-span-4' : 'md:col-span-1'} flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
                       images.length > 0 ? 'border-green-200 bg-green-50' : 'border-gray-300 hover:border-blue-500'
                     }`}
                   >

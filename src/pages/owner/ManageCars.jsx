@@ -3,16 +3,19 @@ import { assets} from '../../assets/assets'
 import Title from '../../components/owner/Title'
 import { useAppContext } from '../../context/AppContext'
 import toast from 'react-hot-toast'
+import { confirmAction } from '../../utils/confirmAction'
 
 const ManageCars = () => {
 
   const {isOwner, axios, currency, navigate, user} = useAppContext()
 
   const [cars, setCars] = useState([])
+  const [loading, setLoading] = useState(true)
 
   const fetchOwnerCars = async ()=>{
+    setLoading(true)
     try {
-      const {data} = await axios.get('/api/user/cars')
+      const {data} = await axios.get('/api/owner/cars')
       if(data.success){
         setCars(data.cars)
       }else{
@@ -20,6 +23,8 @@ const ManageCars = () => {
       }
     } catch (error) {
       toast.error(error.message)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -43,29 +48,26 @@ const ManageCars = () => {
     }
   }
 
-  const deleteCar = async (carId, carOwnerId)=>{
-    try {
-
-      // Only allow owner to delete their own cars
-      if (carOwnerId !== user?._id) {
-        toast.error('You can only delete your own cars')
-        return
-      }
-
-      const confirm = window.confirm('Are you sure you want to delete this car?')
-
-      if(!confirm) return null
-
-      const {data} = await axios.post('/api/owner/delete-car', {carId})
-      if(data.success){
-        toast.success(data.message)
-        fetchOwnerCars()
-      }else{
-        toast.error(data.message)
-      }
-    } catch (error) {
-      toast.error(error.message)
+  const deleteCar = (carId, carOwnerId)=>{
+    // Only allow owner to delete their own cars
+    if (carOwnerId !== user?._id) {
+      toast.error('You can only delete your own cars')
+      return
     }
+
+    confirmAction('Are you sure you want to delete this car? This action cannot be undone.', async () => {
+      try {
+        const {data} = await axios.post('/api/owner/delete-car', {carId})
+        if(data.success){
+          toast.success(data.message)
+          fetchOwnerCars()
+        }else{
+          toast.error(data.message)
+        }
+      } catch (error) {
+        toast.error(error.message)
+      }
+    })
   }
 
   useEffect(()=>{
@@ -97,11 +99,42 @@ const ManageCars = () => {
             </tr>
           </thead>
           <tbody className='divide-y divide-gray-100'>
-            {cars.map((car, index)=>(
+            {loading ? (
+              [...Array(5)].map((_, i) => (
+                <tr key={i} className='animate-pulse'>
+                  <td className='p-3 flex items-center gap-3'>
+                    <div className="h-12 w-12 bg-gray-100 rounded-md"></div>
+                    <div className='max-md:hidden space-y-2'>
+                        <div className="h-4 w-32 bg-gray-100 rounded"></div>
+                        <div className="h-3 w-20 bg-gray-100 rounded"></div>
+                    </div>
+                  </td>
+                  <td className='px-6 py-4 max-md:hidden'>
+                    <div className="h-6 w-20 bg-gray-100 rounded-full"></div>
+                  </td>
+                  <td className='px-6 py-4'>
+                    <div className="h-5 w-16 bg-gray-100 rounded"></div>
+                  </td>
+                  <td className='px-6 py-4 max-md:hidden'>
+                     <div className="h-5 w-16 bg-gray-100 rounded"></div>
+                  </td>
+                  <td className='px-6 py-4 max-md:hidden'>
+                    <div className="h-6 w-24 bg-gray-100 rounded-full"></div>
+                  </td>
+                  <td className='px-6 py-4'>
+                     <div className="flex items-center gap-4">
+                      <div className="h-10 w-10 bg-gray-100 rounded-xl"></div>
+                      <div className="h-10 w-10 bg-gray-100 rounded-xl"></div>
+                     </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              cars.map((car, index)=>(
               <tr key={index} className='hover:bg-gray-50 transition-colors duration-150'>
 
                 <td className='p-3 flex items-center gap-3'>
-                  <img src={car.images && car.images.length > 0 ? car.images[0] : assets.car_image1} alt="" className="h-12 w-12 aspect-square rounded-md object-cover"/>
+                  <img src={car.images?.[0] || car.image} alt="" className="h-12 w-12 aspect-square rounded-md object-cover"/>
                   <div className='max-md:hidden'>
                     <p className='font-medium'>{car.brand} {car.model}</p>
                     <p className='text-xs text-gray-500'>{car.seating_capacity} • {car.transmission}</p>
@@ -158,7 +191,8 @@ const ManageCars = () => {
                 </td>
 
               </tr>
-            ))}
+            ))
+            )}
           </tbody>
         </table>
 

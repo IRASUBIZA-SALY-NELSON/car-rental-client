@@ -8,7 +8,7 @@ const LoadingScreen = () => {
         <img
           src={assets.logo}
           alt="Intare Logo"
-          className="w-24 h-24 md:w-32 md:h-32 object-contain animate-pulse-custom"
+          className="w-48 h-48 md:w-64 md:h-64 object-contain animate-pulse-custom"
         />
         <div className="mt-8 flex gap-2">
            <div className="w-2 h-2 bg-primary rounded-full animate-bounce delay-0"></div>

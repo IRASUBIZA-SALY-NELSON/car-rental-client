@@ -85,14 +85,14 @@ const AddCar = () => {
   };
 
   return (
-    <div className='px-4 py-6 md:px-8 lg:px-12 flex-1 bg-gray-50 min-h-screen'>
-      <div className='max-w-6xl mx-auto'>
+    <div className='px-4 pt-10 md:px-10 w-full bg-gray-50 min-h-screen pb-12'>
+      <div className='w-full'>
         <Title
           title="List Your Car"
           subTitle="Fill in the details below to add your car to our rental fleet. Make sure all information is accurate to attract more customers."
         />
 
-        <form onSubmit={onSubmitHandler} className='mt-8 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden'>
+        <form onSubmit={onSubmitHandler} className='mt-6 w-full bg-white rounded-xl shadow-sm border border-borderColor overflow-hidden'>
           {/* Header */}
           <div className='px-6 py-4 border-b border-gray-100 bg-gray-50'>
             <h2 className='text-lg font-semibold text-gray-800'>Car Information</h2>
@@ -120,7 +120,7 @@ const AddCar = () => {
                     </button>
                   </div>
                 ))}
-                
+
                 {images.length < 5 && (
                   <div
                     onClick={() => fileInputRef.current?.click()}

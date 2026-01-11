@@ -4,7 +4,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { useAppContext } from '../../context/AppContext';
 import toast from 'react-hot-toast';
 
-const Sidebar = () => {
+const Sidebar = ({ isOpen, closeSidebar }) => {
 
     const {user, axios, fetchUser} = useAppContext()
     const location = useLocation()
@@ -30,33 +30,58 @@ const Sidebar = () => {
     }
 
   return (
-    <div className='relative min-h-screen md:flex flex-col items-center pt-8 max-w-13 md:max-w-60 w-full border-r border-borderColor text-sm'>
-
-        <div className='group relative'>
-            <label htmlFor="image">
-                <img src={image ? URL.createObjectURL(image) : user?.image ||  "https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=300"} alt="" className='h-9 md:h-14 w-9 md:w-14 rounded-full mx-auto'/>
-                <input type="file" id='image' accept="image/*" hidden onChange={e=> setImage(e.target.files[0])}/>
-
-                <div className='absolute hidden top-0 right-0 left-0 bottom-0 bg-black/10 rounded-full group-hover:flex items-center justify-center cursor-pointer'>
-                    <img src={assets.edit_icon} alt="" />
-                </div>
-            </label>
-        </div>
-        {image && (
-            <button className='absolute top-0 right-0 flex p-2 gap-1 bg-primary/10 text-primary cursor-pointer' onClick={updateImage}>Save <img src={assets.check_icon} width={13} alt="" /></button>
+    <>
+        {/* Mobile Backdrop */}
+        {isOpen && (
+            <div
+                className="fixed inset-0 bg-black/50 z-20 md:hidden transition-opacity"
+                onClick={closeSidebar}
+            />
         )}
-        <p className='mt-2 text-base max-md:hidden'>{user?.name}</p>
-      
-      <div className='w-full'>
-        {ownerMenuLinks.map((link, index)=>(
-            <NavLink key={index} to={link.path} className={`relative flex items-center gap-2 w-full py-3 pl-4 first:mt-6 ${link.path === location.pathname ? 'bg-primary/10 text-primary' : 'text-gray-600'}`}>
-                <img src={link.path === location.pathname ? link.coloredIcon : link.icon} alt="car icon" />
-                <span className='max-md:hidden'>{link.name}</span>
-                <div className={`${link.path === location.pathname && 'bg-primary'} w-1.5 h-8 rounded-l right-0 absolute`}></div>
-            </NavLink>
-        ))}
-      </div>
-    </div>
+
+        {/* Sidebar Container */}
+        <div className={`
+            fixed md:static top-0 left-0 z-30 h-full w-64 bg-white border-r border-borderColor flex flex-col items-center pt-8 text-sm transition-transform duration-300 ease-in-out px-4
+            ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        `}>
+
+            <div className='group relative'>
+                <label htmlFor="image">
+                    <img src={image ? URL.createObjectURL(image) : user?.image ||  "https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=300"} alt="" className='h-20 w-20 rounded-full mx-auto object-cover border-2 border-gray-100'/>
+                    <input type="file" id='image' accept="image/*" hidden onChange={e=> setImage(e.target.files[0])}/>
+
+                    <div className='absolute hidden top-0 right-0 left-0 bottom-0 bg-black/20 rounded-full group-hover:flex items-center justify-center cursor-pointer transition-all'>
+                        <img src={assets.edit_icon} alt="" className="w-6 h-6 invert brightness-0" />
+                    </div>
+                </label>
+            </div>
+            {image && (
+                <button className='flex items-center gap-1.5 mt-2 px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-medium' onClick={updateImage}>
+                    Save Change <img src={assets.check_icon} width={12} alt="" />
+                </button>
+            )}
+            <p className='mt-3 text-lg font-medium text-gray-800'>{user?.name}</p>
+            <p className='text-xs text-gray-500 mb-6'>Owner Panel</p>
+
+            <div className='w-full space-y-1'>
+                {ownerMenuLinks.map((link, index)=>(
+                    <NavLink
+                        key={index}
+                        to={link.path}
+                        onClick={closeSidebar}
+                        className={({ isActive }) => `
+                            relative flex items-center gap-3 w-full py-3 px-4 rounded-lg transition-all duration-200
+                            ${isActive ? 'bg-blue-50 text-blue-600 font-medium' : 'text-gray-600 hover:bg-gray-50'}
+                        `}
+                    >
+                        <img src={link.path === location.pathname ? link.coloredIcon : link.icon} alt="icon" className='w-5 h-5 object-contain' />
+                        <span className='text-sm'>{link.name}</span>
+                        {/* Active Indicator moved to simple background style above, simplified structure */}
+                    </NavLink>
+                ))}
+            </div>
+        </div>
+    </>
   )
 }
 

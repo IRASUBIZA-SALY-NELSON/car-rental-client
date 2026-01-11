@@ -128,33 +128,45 @@ const Dashboard = () => {
           </div>
 
           <div className='space-y-4'>
-            {data.recentBookings.map((booking, index)=>(
-              <div key={index} className='flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors'>
-                <div className='flex items-center gap-4'>
-                  <div className='flex items-center justify-center w-12 h-12 rounded-full bg-primary/10'>
-                    <img src={assets.carIconColored} alt="" className='h-6 w-6'/>
+            {data.recentBookings.length > 0 ? (
+              data.recentBookings.map((booking, index)=>(
+                <div key={index} className='flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors'>
+                  <div className='flex items-center gap-4'>
+                    <div className='flex items-center justify-center w-12 h-12 rounded-full bg-primary/10'>
+                      <img src={assets.carIconColored} alt="" className='h-6 w-6'/>
+                    </div>
+                    <div>
+                      <p className='font-medium text-gray-800'>{booking.car.brand} {booking.car.model}</p>
+                      <p className='text-sm text-gray-500'>by {booking.user?.name || 'Customer'}</p>
+                      <p className='text-xs text-gray-400'>{new Date(booking.createdAt).toLocaleDateString()}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className='font-medium text-gray-800'>{booking.car.brand} {booking.car.model}</p>
-                    <p className='text-sm text-gray-500'>by {booking.user?.name || 'Customer'}</p>
-                    <p className='text-xs text-gray-400'>{new Date(booking.createdAt).toLocaleDateString()}</p>
-                  </div>
-                </div>
 
-                <div className='flex items-center gap-4'>
-                  <div className='text-right'>
-                    <p className='font-semibold text-gray-800'>{booking.price ? `${currency}${booking.price.toLocaleString()}` : `${currency}0`}</p>
-                    <span className={`inline-block px-3 py-1 text-xs font-medium rounded-full ${
-                      booking.status === 'confirmed' ? 'bg-green-100 text-green-800' :
-                      booking.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-red-100 text-red-800'
-                    }`}>
-                      {booking.status}
-                    </span>
+                  <div className='flex items-center gap-4'>
+                    <div className='text-right'>
+                      <p className='font-semibold text-gray-800'>{booking.price ? `${currency}${booking.price.toLocaleString()}` : `${currency}0`}</p>
+                      <span className={`inline-block px-3 py-1 text-xs font-medium rounded-full ${
+                        booking.status === 'confirmed' ? 'bg-green-100 text-green-800' :
+                        booking.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-red-100 text-red-800'
+                      }`}>
+                        {booking.status}
+                      </span>
+                    </div>
                   </div>
                 </div>
+              ))
+            ) : (
+              <div className='flex flex-col items-center justify-center py-12 text-center'>
+                <div className='bg-gray-50 p-4 rounded-full mb-3'>
+                  <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                  </svg>
+                </div>
+                <h3 className='text-lg font-medium text-gray-900'>No recent bookings</h3>
+                <p className='text-gray-500 max-w-sm mt-1'>New bookings will appear here once customers start renting your cars.</p>
               </div>
-            ))}
+            )}
           </div>
         </div>
 
@@ -182,14 +194,14 @@ const Dashboard = () => {
           <div className='p-6 border border-borderColor rounded-lg bg-white'>
             <h1 className='text-lg font-semibold text-gray-800 mb-4'>Quick Actions</h1>
             <div className='space-y-3'>
-              <button 
+              <button
                 onClick={() => navigate('/owner/add-car')}
                 className='w-full flex items-center gap-3 p-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors'
               >
                 <img src={assets.addIconColored} alt="" className='h-5 w-5'/>
                 Add New Car
               </button>
-              <button 
+              <button
                 onClick={() => navigate('/owner/manage-bookings')}
                 className='w-full flex items-center gap-3 p-3 border border-primary text-primary rounded-lg hover:bg-primary/5 transition-colors'
               >

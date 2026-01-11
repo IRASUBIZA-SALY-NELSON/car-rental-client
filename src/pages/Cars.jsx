@@ -5,7 +5,7 @@ import CarCardNew from '../components/CarCardNew'
 import { useSearchParams } from 'react-router-dom'
 import { useAppContext } from '../context/AppContext'
 import toast from 'react-hot-toast'
-// import { motion } from 'motion/react'
+import { motion } from 'motion/react'
 
 const Cars = () => {
 
@@ -52,6 +52,12 @@ const Cars = () => {
   useEffect(()=>{
     isSearchData && searchCarAvailablity()
   },[])
+
+  useEffect(()=>{
+    if(cars.length > 0 && !isSearchData){
+      setFilteredCars(cars)
+    }
+  },[cars, isSearchData])
 
   useEffect(()=>{
     cars.length > 0 && !isSearchData && applyFilter()

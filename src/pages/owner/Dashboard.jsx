@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { assets, dummyDashboardData } from '../../assets/assets'
+import { assets } from '../../assets/assets'
 import Title from '../../components/owner/Title'
 import { useAppContext } from '../../context/AppContext'
 import toast from 'react-hot-toast'
@@ -27,7 +27,7 @@ const Dashboard = () => {
     {title: "Total Bookings", value: data.totalBookings, icon: assets.listIconColored, bgColor: "bg-green-50", textColor: "text-green-600"},
     {title: "Pending", value: data.pendingBookings, icon: assets.cautionIconColored, bgColor: "bg-yellow-50", textColor: "text-yellow-600"},
     {title: "Confirmed", value: data.completedBookings, icon: assets.check_icon, bgColor: "bg-green-50", textColor: "text-green-600"},
-    {title: "Total Revenue", value: `${currency}${data.totalRevenue}`, icon: assets.star_icon, bgColor: "bg-purple-50", textColor: "text-purple-600"},
+    {title: "Total Revenue", value: data.totalRevenue ? `${currency}${data.totalRevenue.toLocaleString()}` : `${currency}0`, icon: assets.star_icon, bgColor: "bg-purple-50", textColor: "text-purple-600"},
     {title: "Active Users", value: data.activeUsers, icon: assets.users_icon, bgColor: "bg-indigo-50", textColor: "text-indigo-600"},
   ]
 
@@ -41,53 +41,57 @@ const Dashboard = () => {
        }
     } catch (error) {
       toast.error(error.message)
-      // Fallback to dummy data for development
+      // Fallback to realistic data for development
       setData({
-        totalCars: 12,
-        totalBookings: 45,
-        pendingBookings: 8,
-        completedBookings: 32,
-        cancelledBookings: 5,
-        totalRevenue: 15420,
-        monthlyRevenue: 2840,
-        averageBookingValue: 342,
-        activeUsers: 28,
+        totalCars: 10,
+        totalBookings: 28,
+        pendingBookings: 5,
+        completedBookings: 20,
+        cancelledBookings: 3,
+        totalRevenue: 1850000,
+        monthlyRevenue: 420000,
+        averageBookingValue: 66000,
+        activeUsers: 45,
         recentBookings: [
           {
             _id: "1",
-            car: { brand: "Toyota", model: "Camry" },
-            user: { name: "John Doe" },
+            car: { brand: "Toyota", model: "Hilux" },
+            user: { name: "Jean Mugisha" },
             status: "confirmed",
-            price: 450,
+            price: 45000,
             createdAt: "2025-12-20T10:00:00.000Z"
           },
           {
             _id: "2",
             car: { brand: "Honda", model: "Civic" },
-            user: { name: "Jane Smith" },
+            user: { name: "Grace Uwimana" },
             status: "pending",
-            price: 380,
+            price: 40000,
             createdAt: "2025-12-19T14:30:00.000Z"
           },
           {
             _id: "3",
             car: { brand: "BMW", model: "X3" },
-            user: { name: "Mike Johnson" },
+            user: { name: "Paul Niyonzima" },
             status: "confirmed",
-            price: 650,
+            price: 75000,
             createdAt: "2025-12-18T09:15:00.000Z"
           }
         ],
-        revenueData: [1200, 1800, 2200, 1900, 2400, 2840]
+        revenueData: [280000, 320000, 380000, 350000, 410000, 420000]
       })
     }
   }
 
   useEffect(()=>{
+    if(!isOwner){
+      navigate('/')
+      return
+    }
     if(isOwner){
       fetchDashboardData()
     }
-  },[isOwner])
+  },[isOwner, navigate])
 
   return (
     <div className='px-4 pt-10 md:px-10 flex-1'>
@@ -139,7 +143,7 @@ const Dashboard = () => {
 
                 <div className='flex items-center gap-4'>
                   <div className='text-right'>
-                    <p className='font-semibold text-gray-800'>{currency}{booking.price}</p>
+                    <p className='font-semibold text-gray-800'>{booking.price ? `${currency}${booking.price.toLocaleString()}` : `${currency}0`}</p>
                     <span className={`inline-block px-3 py-1 text-xs font-medium rounded-full ${
                       booking.status === 'confirmed' ? 'bg-green-100 text-green-800' :
                       booking.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
@@ -160,7 +164,7 @@ const Dashboard = () => {
           <div className='p-6 border border-borderColor rounded-lg bg-linear-to-br from-primary/5 to-primary/10'>
             <h1 className='text-lg font-semibold text-gray-800 mb-2'>Monthly Revenue</h1>
             <p className='text-gray-500 text-sm mb-4'>Revenue for current month</p>
-            <p className='text-4xl font-bold text-primary mb-2'>{currency}{data.monthlyRevenue}</p>
+            <p className='text-4xl font-bold text-primary mb-2'>{data.monthlyRevenue ? `${currency}${data.monthlyRevenue.toLocaleString()}` : `${currency}0`}</p>
             <div className='flex items-center gap-2'>
               <span className='text-green-600 text-sm font-medium'>↑ 12.5%</span>
               <span className='text-gray-500 text-sm'>vs last month</span>
@@ -171,7 +175,7 @@ const Dashboard = () => {
           <div className='p-6 border border-borderColor rounded-lg bg-white'>
             <h1 className='text-lg font-semibold text-gray-800 mb-2'>Average Booking Value</h1>
             <p className='text-gray-500 text-sm mb-4'>Average revenue per booking</p>
-            <p className='text-3xl font-bold text-gray-800'>{currency}{data.averageBookingValue}</p>
+            <p className='text-3xl font-bold text-gray-800'>{data.averageBookingValue ? `${currency}${data.averageBookingValue.toLocaleString()}` : `${currency}0`}</p>
           </div>
 
           {/* Quick Actions */}

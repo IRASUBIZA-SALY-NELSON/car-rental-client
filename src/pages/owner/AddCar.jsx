@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Title from '../../components/owner/Title';
 import { assets } from '../../assets/assets';
 import { useAppContext } from '../../context/AppContext';
@@ -7,9 +7,16 @@ import { FaUpload, FaCar, FaInfoCircle, FaMoneyBillWave, FaCog, FaGasPump, FaUse
 
 const AddCar = () => {
 
-  const {axios, currency} = useAppContext()
+  const {axios, currency, isOwner, navigate} = useAppContext()
 
-  const [image, setImage] = useState(null)
+  useEffect(() => {
+    if (!isOwner) {
+      navigate('/')
+      return
+    }
+  }, [isOwner, navigate])
+
+  const [images, setImages] = useState([])
   const [car, setCar] = useState({
     brand: '',
     model: '',
@@ -32,14 +39,16 @@ const AddCar = () => {
     setIsLoading(true)
     try {
       const formData = new FormData()
-      formData.append('images', image)
+      images.forEach((image, index) => {
+        formData.append(`images`, image);
+      });
       formData.append('carData', JSON.stringify(car))
 
       const {data} = await axios.post('/api/owner/add-car', formData)
 
       if(data.success){
         toast.success(data.message)
-        setImage(null)
+        setImages([])
         setCar({
           brand: '',
           model: '',
@@ -65,8 +74,14 @@ const AddCar = () => {
 
   const fileInputRef = useRef(null);
 
-  const handleImageClick = () => {
-    fileInputRef.current?.click();
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    setImages(files);
+  };
+
+  const removeImage = (index) => {
+    const newImages = images.filter((_, i) => i !== index);
+    setImages(newImages);
   };
 
   return (
@@ -87,45 +102,54 @@ const AddCar = () => {
           <div className='p-6 space-y-8'>
             {/* Car Image Upload */}
             <div className='space-y-2'>
-              <label className='block text-sm font-medium text-gray-700'>Car Photos</label>
-              <div
-                onClick={handleImageClick}
-                className={`mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-lg ${image ? 'border-green-200 bg-green-50' : 'border-gray-300 hover:border-blue-500'} transition-colors cursor-pointer`}
-              >
-                <div className='space-y-1 text-center'>
-                  {image ? (
-                    <div className='relative'>
-                      <img
-                        src={URL.createObjectURL(image)}
-                        alt="Car preview"
-                        className='mx-auto h-32 w-full object-cover rounded-md'
-                      />
-                      <div className='absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity'>
-                        <span className='text-white text-sm font-medium'>Change Photo</span>
-                      </div>
-                    </div>
-                  ) : (
-                    <>
+              <label className='block text-sm font-medium text-gray-700'>Car Photos (Multiple)</label>
+              <div className='grid grid-cols-2 md:grid-cols-3 gap-4'>
+                {images.map((image, index) => (
+                  <div key={index} className='relative group'>
+                    <img
+                      src={URL.createObjectURL(image)}
+                      alt={`Car photo ${index + 1}`}
+                      className='w-full h-32 object-cover rounded-lg'
+                    />
+                    <button
+                      type='button'
+                      onClick={() => removeImage(index)}
+                      className='absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity'
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+                
+                {images.length < 5 && (
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    className={`mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
+                      images.length > 0 ? 'border-green-200 bg-green-50' : 'border-gray-300 hover:border-blue-500'
+                    }`}
+                  >
+                    <div className='text-center'>
                       <FaUpload className='mx-auto h-12 w-12 text-gray-400' />
                       <div className='flex text-sm text-gray-600'>
                         <span className='relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none'>
-                          Upload a file
+                          Add Photos
                         </span>
                         <p className='pl-1'>or drag and drop</p>
                       </div>
-                      <p className='text-xs text-gray-500'>PNG, JPG, GIF up to 5MB</p>
-                    </>
-                  )}
-                  <input
-                    ref={fileInputRef}
-                    id="car-image"
-                    type="file"
-                    accept="image/*"
-                    className='sr-only'
-                    onChange={e => setImage(e.target.files[0])}
-                  />
-                </div>
+                    </div>
+                    <p className='text-xs text-gray-500'>PNG, JPG up to 5MB each</p>
+                  </div>
+                )}
               </div>
+              <input
+                ref={fileInputRef}
+                id="car-images"
+                type="file"
+                accept="image/*"
+                multiple
+                className='sr-only'
+                onChange={handleImageChange}
+              />
             </div>
 
             {/* Basic Information Section */}

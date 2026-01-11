@@ -20,17 +20,13 @@ const CarDetails = () => {
   const [mode, setMode] = useState(searchParams.get('mode') || 'rent'); // 'rent' or 'buy'
   // Carousel state is now managed by the Carousel component
 
-  // Buy form state
+  // Rent form state
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [idNumber, setIdNumber] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState('');
-  const [deliveryAddress, setDeliveryAddress] = useState('');
-  const [city, setCity] = useState('');
-  const [postalCode, setPostalCode] = useState('');
-  const [country, setCountry] = useState('');
-  const [alternatePhone, setAlternatePhone] = useState('');
-  const [preferredDeliveryDate, setPreferredDeliveryDate] = useState('');
+  const [driverLicense, setDriverLicense] = useState('');
+  const [rentalDuration, setRentalDuration] = useState('1');
   const [insuranceOption, setInsuranceOption] = useState('basic');
   const [warrantyOption, setWarrantyOption] = useState('1year');
   const [financingOption, setFinancingOption] = useState(false);
@@ -60,8 +56,11 @@ const CarDetails = () => {
         returnDate,
         location,
         phoneNumber: phone,
+        driverLicense,
+        rentalDuration,
+        insuranceOption,
       });
-
+      
       if (data.success) {
         toast.success(data.message || 'Booking created successfully!');
         navigate('/my-bookings');
@@ -262,7 +261,7 @@ const CarDetails = () => {
             className="flex items-end gap-2"
           >
             <span className="text-4xl font-bold text-gray-900">
-              {currency}{mode === 'rent' ? car.pricePerDay : car.purchasePrice}
+              {currency}{mode === 'rent' ? car.pricePerDay.toLocaleString() : car.purchasePrice.toLocaleString()}
             </span>
             <span className="text-gray-500">{mode === 'rent' ? '/ day' : ''}</span>
           </motion.div>
@@ -281,7 +280,15 @@ const CarDetails = () => {
                   <label htmlFor="pickup-date" className="font-medium text-gray-700">Pickup Date</label>
                   <input
                     value={pickupDate}
-                    onChange={(e) => setPickupDate(e.target.value)}
+                    onChange={(e) => {
+                      const newPickupDate = e.target.value;
+                      setPickupDate(newPickupDate);
+                      
+                      // Ensure return date is always greater than pickup date
+                      if (returnDate && newPickupDate && newPickupDate >= returnDate) {
+                        setReturnDate('');
+                      }
+                    }}
                     type="date"
                     required
                     min={new Date().toISOString().split('T')[0]}
@@ -298,9 +305,18 @@ const CarDetails = () => {
                   <label htmlFor="return-date" className="font-medium text-gray-700">Return Date</label>
                   <input
                     value={returnDate}
-                    onChange={(e) => setReturnDate(e.target.value)}
+                    onChange={(e) => {
+                      const newReturnDate = e.target.value;
+                      setReturnDate(newReturnDate);
+                      
+                      // Ensure return date is always greater than pickup date
+                      if (pickupDate && newReturnDate && pickupDate >= newReturnDate) {
+                        setReturnDate('');
+                      }
+                    }}
                     type="date"
                     required
+                    min={pickupDate ? new Date(new Date(pickupDate).getTime() + 24 * 60 * 60 * 1000).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]}
                     className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
                   />
                 </motion.div>
@@ -311,12 +327,12 @@ const CarDetails = () => {
                   transition={{ duration: 0.5, delay: 0.3 }}
                   className="flex flex-col gap-2"
                 >
-                  <label htmlFor="location" className="font-medium text-gray-700">Pickup Location</label>
+                  <label htmlFor="driver-license" className="font-medium text-gray-700">Driver's License *</label>
                   <input
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
+                    value={driverLicense}
+                    onChange={(e) => setDriverLicense(e.target.value)}
                     type="text"
-                    placeholder="e.g. Gicumbi, Rwanda"
+                    placeholder="Enter your driver's license number"
                     required
                     className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
                   />
@@ -328,7 +344,44 @@ const CarDetails = () => {
                   transition={{ duration: 0.5, delay: 0.4 }}
                   className="flex flex-col gap-2"
                 >
-                  <label htmlFor="phone" className="font-medium text-gray-700">Phone Number</label>
+                  <label htmlFor="rental-duration" className="font-medium text-gray-700">Rental Duration *</label>
+                  <select
+                    value={rentalDuration}
+                    onChange={(e) => setRentalDuration(e.target.value)}
+                    required
+                    className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+                  >
+                    <option value="1">1 Day</option>
+                    <option value="3">3 Days</option>
+                    <option value="7">1 Week</option>
+                    <option value="30">1 Month</option>
+                  </select>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.5 }}
+                  className="flex flex-col gap-2"
+                >
+                  <label htmlFor="location" className="font-medium text-gray-700">Pickup Location *</label>
+                  <input
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    type="text"
+                    placeholder="e.g. Kigali, Rwanda"
+                    required
+                    className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+                  />
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.6 }}
+                  className="flex flex-col gap-2"
+                >
+                  <label htmlFor="phone" className="font-medium text-gray-700">Phone Number *</label>
                   <input
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}

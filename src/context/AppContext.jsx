@@ -51,10 +51,22 @@ export const AppProvider = ({ children })=>{
     //     }
     // }  fetchCars();
 
-    const fetchCars = async () => {
-  console.log('Using local dummy car data');
-  setCars(dummyCarData); // Use local data directly
-};
+    const fetchCars = async () =>{
+        try {
+            console.log('🚗 Fetching cars from:', axios.defaults.baseURL + '/api/user/cars')
+            const {data} = await axios.get('/api/user/cars')
+            console.log('✅ Cars data received:', data)
+            if (data.success) {
+                setCars(data.cars)
+            } else {
+                console.log('❌ Backend failed, using dummy data')
+                setCars(dummyCarData)
+            }
+        } catch (error) {
+            console.error('❌ Error fetching cars from backend, using dummy data:', error.message)
+            setCars(dummyCarData)
+        }
+    }
 
     // Function to log out the user
     const logout = ()=>{

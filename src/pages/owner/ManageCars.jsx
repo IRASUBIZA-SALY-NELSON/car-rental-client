@@ -100,13 +100,11 @@ const ManageCars = () => {
             {cars.map((car, index)=>(
               <tr key={index} className='hover:bg-gray-50 transition-colors duration-150'>
 
-                <td className='px-6 py-4'>
-                  <div className="flex items-center gap-4">
-                    <img src={car.image} alt="" className="h-12 w-16 rounded-lg object-cover bg-gray-100"/>
-                    <div className='max-sm:hidden'>
-                      <p className='font-semibold text-gray-900'>{car.brand} {car.model}</p>
-                      <p className='text-xs text-gray-500 mt-0.5'>{car.seating_capacity} seats • {car.transmission}</p>
-                    </div>
+                <td className='p-3 flex items-center gap-3'>
+                  <img src={car.images && car.images.length > 0 ? car.images[0] : assets.car_image1} alt="" className="h-12 w-12 aspect-square rounded-md object-cover"/>
+                  <div className='max-md:hidden'>
+                    <p className='font-medium'>{car.brand} {car.model}</p>
+                    <p className='text-xs text-gray-500'>{car.seating_capacity} • {car.transmission}</p>
                   </div>
                 </td>
 

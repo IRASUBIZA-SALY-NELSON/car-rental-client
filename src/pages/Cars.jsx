@@ -23,7 +23,7 @@ const Cars = () => {
   const [filteredCars, setFilteredCars] = useState([])
 
   const applyFilter = async ()=>{
-     
+
     if(input === ''){
       setFilteredCars(cars)
       return null
@@ -31,8 +31,8 @@ const Cars = () => {
 
     const filtered = cars.slice().filter((car)=>{
       return car.brand.toLowerCase().includes(input.toLowerCase())
-      || car.model.toLowerCase().includes(input.toLowerCase())  
-      || car.category.toLowerCase().includes(input.toLowerCase())  
+      || car.model.toLowerCase().includes(input.toLowerCase())
+      || car.category.toLowerCase().includes(input.toLowerCase())
       || car.transmission.toLowerCase().includes(input.toLowerCase())
     })
     setFilteredCars(filtered)
@@ -66,7 +66,7 @@ const Cars = () => {
   return (
     <div>
 
-      <motion.div 
+      <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
@@ -93,10 +93,10 @@ const Cars = () => {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.6, duration: 0.5 }}
 
-      className='px-6 md:px-16 lg:px-24 xl:px-32 mt-10'>
-        <p className='text-gray-500 xl:px-20 max-w-7xl mx-auto'>Showing {filteredCars.length} Cars</p>
+      className='px-4 md:px-8 lg:px-12 mt-10 max-w-[1920px] mx-auto'>
+        <p className='text-gray-500 mb-2 font-medium'>Showing {filteredCars.length} Cars</p>
 
-        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-4 xl:px-20 max-w-7xl mx-auto'>
+        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 gap-y-10 mt-4'>
           {filteredCars.map((car, index)=> (
             <motion.div key={index}
             initial={{ opacity: 0, y: 20 }}

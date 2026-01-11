@@ -3,6 +3,7 @@ import { assets} from '../../assets/assets'
 import Title from '../../components/owner/Title'
 import { useAppContext } from '../../context/AppContext'
 import toast from 'react-hot-toast'
+import { confirmAction } from '../../utils/confirmAction'
 
 const ManageCars = () => {
 
@@ -43,29 +44,26 @@ const ManageCars = () => {
     }
   }
 
-  const deleteCar = async (carId, carOwnerId)=>{
-    try {
-
-      // Only allow owner to delete their own cars
-      if (carOwnerId !== user?._id) {
-        toast.error('You can only delete your own cars')
-        return
-      }
-
-      const confirm = window.confirm('Are you sure you want to delete this car?')
-
-      if(!confirm) return null
-
-      const {data} = await axios.post('/api/owner/delete-car', {carId})
-      if(data.success){
-        toast.success(data.message)
-        fetchOwnerCars()
-      }else{
-        toast.error(data.message)
-      }
-    } catch (error) {
-      toast.error(error.message)
+  const deleteCar = (carId, carOwnerId)=>{
+    // Only allow owner to delete their own cars
+    if (carOwnerId !== user?._id) {
+      toast.error('You can only delete your own cars')
+      return
     }
+
+    confirmAction('Are you sure you want to delete this car? This action cannot be undone.', async () => {
+      try {
+        const {data} = await axios.post('/api/owner/delete-car', {carId})
+        if(data.success){
+          toast.success(data.message)
+          fetchOwnerCars()
+        }else{
+          toast.error(data.message)
+        }
+      } catch (error) {
+        toast.error(error.message)
+      }
+    })
   }
 
   useEffect(()=>{

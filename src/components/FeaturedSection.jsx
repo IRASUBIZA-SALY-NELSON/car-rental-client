@@ -38,7 +38,7 @@ const FeaturedSection = () => {
                     <div className="p-6 bg-gray-50 rounded-full mb-4">
                         <img src={assets.cautionIconColored} alt="" className="w-12 h-12 opacity-30" />
                     </div>
-                    <h3 className="text-xl font-bold text-gray-800 mb-2">No cars yet in the system</h3>
+                    <h3 className="text-xl font-bold text-gray-800 mb-2">No cars yet in the Platform ,Please check later</h3>
                     <p className="text-gray-500 max-w-sm">
                         Our fleet is currently offline. Please check back shortly for new listings.
                     </p>

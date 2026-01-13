@@ -97,15 +97,33 @@ const Cars = () => {
         <p className='text-gray-500 mb-2 font-medium'>Showing {filteredCars.length} Cars</p>
 
         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 gap-y-10 mt-4'>
-          {filteredCars.map((car, index)=> (
-            <motion.div key={index}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 * index, duration: 0.4 }}
-            >
-              <CarCardNew car={car}/>
-            </motion.div>
-          ))}
+          {filteredCars.length === 0 ? (
+            <div className="col-span-full py-20 flex flex-col items-center justify-center text-center">
+               <div className="p-6 bg-gray-50 rounded-full mb-4">
+                  <img src={assets.cautionIconColored} alt="" className="w-12 h-12 opacity-30" />
+               </div>
+               <h3 className="text-xl font-bold text-gray-800 mb-2">No cars yet in the system</h3>
+               <p className="text-gray-500 max-w-md">
+                 We couldn't find any cars matching your criteria or there are currently no vehicles available. Please try a different search or check back later.
+               </p>
+               <button
+                onClick={() => {setInput(''); window.location.href='/cars'}}
+                className="mt-6 px-8 py-2.5 bg-gray-900 text-white rounded-full font-medium hover:bg-black transition-all shadow-md"
+               >
+                 Clear All Filters
+               </button>
+            </div>
+          ) : (
+            filteredCars.map((car, index)=> (
+              <motion.div key={index}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 * index, duration: 0.4 }}
+              >
+                <CarCardNew car={car}/>
+              </motion.div>
+            ))
+          )}
         </div>
       </motion.div>
 

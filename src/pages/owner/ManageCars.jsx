@@ -129,6 +129,29 @@ const ManageCars = () => {
                   </td>
                 </tr>
               ))
+            ) : cars.length === 0 ? (
+              <tr>
+                <td colSpan="6" className="px-6 py-20 text-center">
+                  <div className="flex flex-col items-center justify-center space-y-3">
+                    <div className="p-4 bg-gray-50 rounded-full">
+                      <img src={assets.cautionIconColored} alt="" className="w-10 h-10 opacity-40" />
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-lg font-semibold text-gray-800">No cars yet in the system</p>
+                      <p className="text-sm text-gray-500 max-w-sm mx-auto">
+                        It looks like there are no vehicles listed at the moment.
+                        Start by adding a new car to your fleet.
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => navigate('/owner/add-car')}
+                      className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                    >
+                      Add Your First Car
+                    </button>
+                  </div>
+                </td>
+              </tr>
             ) : (
               cars.map((car, index)=>(
               <tr key={index} className='hover:bg-gray-50 transition-colors duration-150'>

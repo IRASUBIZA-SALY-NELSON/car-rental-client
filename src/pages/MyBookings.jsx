@@ -82,7 +82,21 @@ const MyBookings = () => {
       <div>
         {activeTab === 'bookings' && (
           bookings.length === 0 ? (
-            <p className="text-center text-gray-500 mt-8">No bookings found</p>
+            <div className="flex flex-col items-center justify-center py-20 bg-gray-50/50 rounded-2xl border border-dashed border-gray-200 mt-8">
+               <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-4">
+                  <img src={assets.calendar_icon_colored} alt="" className="w-8 h-8 opacity-40 filter grayscale" />
+               </div>
+               <h3 className="text-lg font-bold text-gray-800">No active bookings</h3>
+               <p className="text-gray-500 mt-2 max-w-xs text-center">
+                 You haven't booked any cars yet. Your future rentals will appear here.
+               </p>
+               <button
+                onClick={() => (window.location.href='/cars')}
+                className="mt-6 px-10 py-2.5 bg-primary text-white rounded-full font-semibold hover:bg-primary-dull transition-all shadow-md active:scale-95"
+               >
+                 Book a Car
+               </button>
+            </div>
           ) : (
             bookings.map((booking, index) => (
               <motion.div
@@ -159,7 +173,21 @@ const MyBookings = () => {
 
         {activeTab === 'purchases' && (
           purchases.length === 0 ? (
-            <p className="text-center text-gray-500 mt-8">No purchases found</p>
+            <div className="flex flex-col items-center justify-center py-20 bg-gray-50/50 rounded-2xl border border-dashed border-gray-200 mt-8">
+               <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-4">
+                  <img src={assets.star_icon} alt="" className="w-8 h-8 opacity-40 filter grayscale" />
+               </div>
+               <h3 className="text-lg font-bold text-gray-800">No car purchases</h3>
+               <p className="text-gray-500 mt-2 max-w-xs text-center">
+                 Your car buying history is empty. When you buy a car, it will show up here.
+               </p>
+               <button
+                onClick={() => (window.location.href='/cars')}
+                className="mt-6 px-10 py-2.5 bg-primary text-white rounded-full font-semibold hover:bg-primary-dull transition-all shadow-md active:scale-95"
+               >
+                 Browse Collection
+               </button>
+            </div>
           ) : (
             purchases.map((purchase, index) => (
               <motion.div

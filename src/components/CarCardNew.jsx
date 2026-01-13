@@ -12,37 +12,41 @@ const CarCardNew = ({ car }) => {
   const navigate = useNavigate();
 
     const getCarImages = (car) => {
-      console.log('Full car object:', JSON.stringify(car, null, 2));
-  const carNumber = car.carNumber || '1';
-  switch (carNumber) {
-    case '1':
-      return [assets.car1a, assets.car1b, assets.car1c, assets.car1d, assets.car1e, assets.car1f];
-    case '2':
-      return [assets.car2a, assets.car2b, assets.car2c, assets.car2d];
-    case '3':
-      return [assets.car3a, assets.car3b, assets.car3c, assets.car3d, assets.car3e, assets.car3f, assets.car3g];
-    case '4':
-      return [assets.car4a, assets.car4b, assets.car4c, assets.car4d, assets.car4e];
-    case '5':
-      return [assets.car5a, assets.car5b, assets.car5c];
-    case '6':
-          return [assets.car6a, assets.car6b, assets.car6c, assets.car6d, assets.car6e, assets.car6f];
-    case '7':
-          return [assets.car7a, assets.car7b, assets.car7c, assets.car7d, assets.car7e];
-    case '8':
-          return [assets.car8a, assets.car8b, assets.car8c, assets.car8d, assets.car8e];
-    case '9':
-          return [assets.car9a, assets.car9b, assets.car9c, assets.car9d];
-    case '10':
-          return [assets.car10a, assets.car10b, assets.car10c];
-    default:
-      console.warn(`No image set found for car number: ${carNumber}, using default images`);
-      return [assets.car1a, assets.car1b, assets.car1c, assets.car1d, assets.car1e, assets.car1f];
-  }
-};
+      // Prioritize actual uploaded images
+      if (car.image || (car.subImages && car.subImages.length > 0)) {
+        return [car.image, ...(car.subImages || [])].filter(img => img);
+      }
 
-const images = getCarImages(car);
-console.log(`Using images for car ${car._id}:`, images);
+      // Fallback to hardcoded dummy data for previous cars or testing
+      const carNumber = car.carNumber || '1';
+      switch (carNumber) {
+        case '1':
+          return [assets.car1a, assets.car1b, assets.car1c, assets.car1d, assets.car1e, assets.car1f];
+        case '2':
+          return [assets.car2a, assets.car2b, assets.car2c, assets.car2d];
+        case '3':
+          return [assets.car3a, assets.car3b, assets.car3c, assets.car3d, assets.car3e, assets.car3f, assets.car3g];
+        case '4':
+          return [assets.car4a, assets.car4b, assets.car4c, assets.car4d, assets.car4e];
+        case '5':
+          return [assets.car5a, assets.car5b, assets.car5c];
+        case '6':
+          return [assets.car6a, assets.car6b, assets.car6c, assets.car6d, assets.car6e, assets.car6f];
+        case '7':
+          return [assets.car7a, assets.car7b, assets.car7c, assets.car7d, assets.car7e];
+        case '8':
+          return [assets.car8a, assets.car8b, assets.car8c, assets.car8d, assets.car8e];
+        case '9':
+          return [assets.car9a, assets.car9b, assets.car9c, assets.car9d];
+        case '10':
+          return [assets.car10a, assets.car10b, assets.car10c];
+        default:
+          return [assets.car1a];
+      }
+    };
+
+    const images = getCarImages(car) || [];
+
   return (
     <div
       onClick={() => {
@@ -67,7 +71,7 @@ console.log(`Using images for car ${car._id}:`, images);
             disableOnInteraction: false,
             pauseOnMouseEnter: true
           }}
-          loop={true}
+          loop={images.length > 1}
           className="h-full"
         >
           {images.map((image, index) => (
@@ -79,7 +83,6 @@ console.log(`Using images for car ${car._id}:`, images);
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
-            backgroundAttachment: 'fixed'
           }}
         />
             </SwiperSlide>
@@ -96,9 +99,9 @@ console.log(`Using images for car ${car._id}:`, images);
           <div>
             Rent: <b>{currency}{car.pricePerDay}</b>/day
           </div>
-          <div>
+          {/* <div>
             Buy: <b>{currency}{car.purchasePrice}</b>
-          </div>
+          </div> */}
         </div>
       </div>
 

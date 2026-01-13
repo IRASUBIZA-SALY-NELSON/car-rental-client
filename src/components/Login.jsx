@@ -24,7 +24,7 @@ const Login = () => {
                 setToken(data.token)
                 localStorage.setItem('token', data.token)
                 setShowLogin(false)
-                
+
                 // Navigate based on user type selection (will be corrected by AppContext after user data loads)
                 if (userType === "owner") {
                     navigate('/owner')
@@ -38,7 +38,7 @@ const Login = () => {
         } catch (error) {
             toast.error(error.message)
         }
-        
+
     }
 
   return (
@@ -48,12 +48,12 @@ const Login = () => {
             <p className="text-2xl font-medium m-auto">
                 <span className="text-primary">{userType === "owner" ? "Owner" : "User"}</span> {state === "login" ? "Login" : "Sign Up"}
             </p>
-            
+
             {/* User Type Selection */}
             <div className="w-full">
                 <p>Login as:</p>
                 <div className="flex gap-2 mt-1">
-                    <button 
+                    <button
                         type="button"
                         onClick={() => setUserType("user")}
                         className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${
@@ -62,7 +62,7 @@ const Login = () => {
                     >
                         Customer
                     </button>
-                    <button 
+                    <button
                         type="button"
                         onClick={() => setUserType("owner")}
                         className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${
@@ -93,24 +93,24 @@ const Login = () => {
             )}
             <div className="w-full ">
                 <p>Email</p>
-                <input 
-                    onChange={(e) => setEmail(e.target.value)} 
-                    value={email} 
-                    placeholder={userType === "owner" ? "owner@gmail.com" : "type here"} 
-                    className="border border-gray-200 rounded w-full p-2 mt-1 outline-primary" 
-                    type="email" 
-                    required 
+                <input
+                    onChange={(e) => setEmail(e.target.value)}
+                    value={email}
+                    placeholder={userType === "owner" ? "owner@gmail.com" : "type here"}
+                    className="border border-gray-200 rounded w-full p-2 mt-1 outline-primary"
+                    type="email"
+                    required
                 />
             </div>
             <div className="w-full ">
                 <p>Password</p>
-                <input 
-                    onChange={(e) => setPassword(e.target.value)} 
-                    value={password} 
-                    placeholder={userType === "owner" ? "Enter your password" : "type here"} 
-                    className="border border-gray-200 rounded w-full p-2 mt-1 outline-primary" 
-                    type="password" 
-                    required 
+                <input
+                    onChange={(e) => setPassword(e.target.value)}
+                    value={password}
+                    placeholder={userType === "owner" ? "Enter your password" : "type here"}
+                    className="border border-gray-200 rounded w-full p-2 mt-1 outline-primary"
+                    type="password"
+                    required
                 />
             </div>
             {state === "register" && userType === "user" ? (

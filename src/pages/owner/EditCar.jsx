@@ -3,17 +3,12 @@ import Title from '../../components/owner/Title';
 import { useAppContext } from '../../context/AppContext';
 import toast from 'react-hot-toast';
 import { FaUpload, FaCar, FaInfoCircle, FaMoneyBillWave, FaCog, FaGasPump, FaUsers, FaMapMarkerAlt, FaAlignLeft } from 'react-icons/fa';
+import { useParams } from 'react-router-dom';
 
-const AddCar = () => {
+const EditCar = () => {
 
-  const {axios, currency, isOwner, navigate} = useAppContext()
-
-  useEffect(() => {
-    if (!isOwner) {
-      navigate('/')
-      return
-    }
-  }, [isOwner, navigate])
+  const { id } = useParams();
+  const { axios, currency, isOwner, navigate, fetchCars, cars } = useAppContext();
 
   const [mainImage, setMainImage] = useState(null)
   const [subImages, setSubImages] = useState([])
@@ -30,51 +25,101 @@ const AddCar = () => {
     location: '',
     description: '',
   })
-
   const [isLoading, setIsLoading] = useState(false)
-  const onSubmitHandler = async (e)=>{
+  const [isFetching, setIsFetching] = useState(true)
+
+  useEffect(() => {
+    if (!isOwner) {
+      navigate('/')
+      return
+    }
+
+    const fetchCarDetails = async () => {
+        setIsFetching(true);
+        try {
+            // Check if car exists in context first
+            let foundCar = cars.find(c => c._id === id);
+
+            if (!foundCar) {
+                const { data } = await axios.get(`/api/owner/cars`);
+                if (data.success) {
+                    foundCar = data.cars.find(c => c._id === id);
+                }
+            }
+
+            if (foundCar) {
+                setCar({
+                    brand: foundCar.brand,
+                    model: foundCar.model,
+                    year: foundCar.year,
+                    pricePerDay: foundCar.pricePerDay,
+                    purchasePrice: foundCar.purchasePrice,
+                    category: foundCar.category,
+                    transmission: foundCar.transmission,
+                    fuel_type: foundCar.fuel_type,
+                    seating_capacity: foundCar.seating_capacity,
+                    location: foundCar.location,
+                    description: foundCar.description,
+                });
+                setMainImage(foundCar.image);
+                setSubImages(foundCar.subImages || []);
+            } else {
+                toast.error("Car not found");
+                navigate('/owner/manage-cars');
+            }
+        } catch (error) {
+            toast.error("Failed to fetch car details");
+            console.error(error);
+        } finally {
+            setIsFetching(false);
+        }
+    };
+
+    fetchCarDetails();
+  }, [id, isOwner, navigate, axios, cars])
+
+  const onSubmitHandler = async (e) => {
     e.preventDefault()
-    if(isLoading) return null
+    if (isLoading) return null
 
     setIsLoading(true)
     try {
       const formData = new FormData()
 
-      if (mainImage) {
+      // Handle main image
+      if (mainImage instanceof File) {
         formData.append('image', mainImage);
       }
 
-      subImages.forEach((image) => {
-        formData.append('subImages', image);
+      // Handle sub images
+      const existingSubImages = [];
+      subImages.forEach((img) => {
+        if (img instanceof File) {
+          formData.append('subImages', img);
+        } else {
+          existingSubImages.push(img);
+        }
       });
 
-      formData.append('carData', JSON.stringify(car))
+      // Include existing sub-images and car ID in carData
+      formData.append('carData', JSON.stringify({
+        ...car,
+        carId: id,
+        subImages: existingSubImages
+      }));
 
-      const {data} = await axios.post('/api/owner/add-car', formData)
+      const { data } = await axios.post('/api/owner/update-car', formData)
 
-      if(data.success){
+      if (data.success) {
         toast.success(data.message)
-        setMainImage(null)
-        setSubImages([])
-        setCar({
-          brand: '',
-          model: '',
-          year: 0,
-          pricePerDay: 0,
-          purchasePrice: 0,
-          category: '',
-          transmission: '',
-          fuel_type: '',
-          seating_capacity: 0,
-          location: '',
-          description: '',
-        })
-      }else{
+        fetchCars(); // Refresh global car list
+        navigate('/owner/manage-cars')
+      } else {
         toast.error(data.message)
       }
     } catch (error) {
       toast.error(error.message)
-    }finally{
+    } finally {
       setIsLoading(false)
     }
   }
@@ -91,7 +136,7 @@ const AddCar = () => {
   const handleSubImagesChange = (e) => {
     const files = Array.from(e.target.files);
     if (subImages.length + files.length > 5) {
-      toast.error('You can only upload up to 5 additional images');
+      toast.error('You can only have up to 5 additional images');
       return;
     }
     setSubImages([...subImages, ...files]);
@@ -102,19 +147,27 @@ const AddCar = () => {
     setSubImages(newImages);
   };
 
+  if (isFetching) {
+    return (
+        <div className="flex items-center justify-center min-h-screen">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+    );
+  }
+
   return (
     <div className='px-4 pt-10 md:px-10 w-full bg-gray-50 min-h-screen pb-12'>
       <div className='w-full'>
         <Title
-          title="List Your Car"
-          subTitle="Fill in the details below to add your car to our rental fleet. Make sure all information is accurate to attract more customers."
+          title="Edit Your Car"
+          subTitle="Update the details of your vehicle to keep information accurate for customers."
         />
 
         <form onSubmit={onSubmitHandler} className='mt-6 w-full bg-white rounded-xl shadow-sm border border-borderColor overflow-hidden'>
           {/* Header */}
           <div className='px-6 py-4 border-b border-gray-100 bg-gray-50'>
             <h2 className='text-lg font-semibold text-gray-800'>Car Information</h2>
-            <p className='text-sm text-gray-500'>Basic details about your vehicle</p>
+            <p className='text-sm text-gray-500'>Update the basic details of your vehicle</p>
           </div>
 
           <div className='p-6 space-y-8'>
@@ -129,7 +182,7 @@ const AddCar = () => {
                 >
                   {mainImage ? (
                     <img
-                      src={URL.createObjectURL(mainImage)}
+                      src={typeof mainImage === 'string' ? mainImage : URL.createObjectURL(mainImage)}
                       alt="Main car photo"
                       className='w-full h-full object-cover'
                     />
@@ -137,14 +190,11 @@ const AddCar = () => {
                     <div className='text-center p-4'>
                       <FaUpload className='mx-auto h-10 w-10 text-gray-400' />
                       <p className='mt-2 text-sm text-gray-600 font-medium'>Upload Main Image</p>
-                      <p className='text-xs text-gray-400 mt-1'>This will be the primary photo shown to users</p>
                     </div>
                   )}
-                  {mainImage && (
-                    <div className='absolute inset-0 bg-black bg-opacity-40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center'>
-                      <p className='text-white text-sm font-medium'>Change Image</p>
-                    </div>
-                  )}
+                  <div className='absolute inset-0 bg-black bg-opacity-40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center'>
+                    <p className='text-white text-sm font-medium'>Change Image</p>
+                  </div>
                 </div>
                 <input
                   ref={fileInputRef}
@@ -162,7 +212,7 @@ const AddCar = () => {
                   {subImages.map((image, index) => (
                     <div key={index} className='relative group h-24'>
                       <img
-                        src={URL.createObjectURL(image)}
+                        src={typeof image === 'string' ? image : URL.createObjectURL(image)}
                         alt={`Sub photo ${index + 1}`}
                         className='w-full h-full object-cover rounded-lg'
                       />
@@ -186,7 +236,6 @@ const AddCar = () => {
                     </div>
                   )}
                 </div>
-                <p className='text-xs text-gray-500'>Add more photos for the details section carousel</p>
                 <input
                   ref={subImagesInputRef}
                   type="file"
@@ -210,7 +259,6 @@ const AddCar = () => {
                   <label className='block text-sm font-medium text-gray-700'>Brand</label>
                   <input
                     type="text"
-                    placeholder="e.g. Toyota, BMW, Mercedes"
                     required
                     className='block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out'
                     value={car.brand}
@@ -221,7 +269,6 @@ const AddCar = () => {
                   <label className='block text-sm font-medium text-gray-700'>Model</label>
                   <input
                     type="text"
-                    placeholder="e.g. Camry, X5, C-Class"
                     required
                     className='block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out'
                     value={car.model}
@@ -232,10 +279,6 @@ const AddCar = () => {
                   <label className='block text-sm font-medium text-gray-700'>Year</label>
                   <input
                     type="number"
-                    min="1900"
-                    max="2099"
-                    step="1"
-                    placeholder="2025"
                     required
                     className='block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out'
                     value={car.year}
@@ -272,52 +315,24 @@ const AddCar = () => {
 
               <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
                 <div className='space-y-1'>
-                  <label className='block text-sm font-medium text-gray-700'>
-                    Daily Rate ({currency})
-                    <span className='ml-1 text-xs text-gray-500'>(required)</span>
-                  </label>
-                  <div className='relative rounded-md shadow-sm'>
-                    <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-                      <span className='text-gray-500 sm:text-sm'>$</span>
-                    </div>
-                    <input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      placeholder="100.00"
-                      required
-                      className='block w-full pl-7 pr-12 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out'
-                      value={car.pricePerDay}
-                      onChange={e => setCar({...car, pricePerDay: e.target.value})}
-                    />
-                    <div className='absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none'>
-                      <span className='text-gray-500 sm:text-sm'>{currency}</span>
-                    </div>
-                  </div>
+                  <label className='block text-sm font-medium text-gray-700'>Daily Rate ({currency})</label>
+                  <input
+                    type="number"
+                    required
+                    className='block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out'
+                    value={car.pricePerDay}
+                    onChange={e => setCar({...car, pricePerDay: e.target.value})}
+                  />
                 </div>
                 <div className='space-y-1'>
-                  <label className='block text-sm font-medium text-gray-700'>
-                    Purchase Price ({currency})
-                    <span className='ml-1 text-xs text-gray-500'>(required)</span>
-                  </label>
-                  <div className='relative rounded-md shadow-sm'>
-                    <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-                      <span className='text-gray-500 sm:text-sm'>$</span>
-                    </div>
-                    <input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      placeholder="25000.00"
-                      required
-                      className='block w-full pl-7 pr-12 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out'
-                      value={car.purchasePrice}
-                      onChange={e => setCar({...car, purchasePrice: e.target.value})}
-                    />
-                    <div className='absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none'>
-                      <span className='text-gray-500 sm:text-sm'>{currency}</span>
-                    </div>
-                  </div>
+                  <label className='block text-sm font-medium text-gray-700'>Purchase Price ({currency})</label>
+                  <input
+                    type="number"
+                    required
+                    className='block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out'
+                    value={car.purchasePrice}
+                    onChange={e => setCar({...car, purchasePrice: e.target.value})}
+                  />
                 </div>
               </div>
             </div>
@@ -363,77 +378,44 @@ const AddCar = () => {
                 </div>
                 <div className='space-y-1'>
                   <label className='block text-sm font-medium text-gray-700'>Seating Capacity</label>
-                  <div className='relative'>
-                    <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-                      <FaUsers className='text-gray-400' />
-                    </div>
-                    <input
-                      type="number"
-                      min="1"
-                      max="20"
-                      placeholder="4"
-                      required
-                      className='block w-full pl-10 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out'
-                      value={car.seating_capacity}
-                      onChange={e => setCar({...car, seating_capacity: e.target.value})}
-                    />
-                  </div>
+                  <input
+                    type="number"
+                    required
+                    className='block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out'
+                    value={car.seating_capacity}
+                    onChange={e => setCar({...car, seating_capacity: e.target.value})}
+                  />
                 </div>
               </div>
             </div>
 
-            {/* Location Section */}
-            <div className='space-y-6 pt-4'>
-              <div className='flex items-center space-x-2 text-gray-700'>
-                <FaMapMarkerAlt className='text-red-500' />
-                <h3 className='text-base font-medium'>Location</h3>
-              </div>
-
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                <div className='space-y-1'>
-                  <label className='block text-sm font-medium text-gray-700'>City</label>
-                  <select
-                    onChange={e => setCar({...car, location: e.target.value})}
-                    value={car.location}
-                    className='block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out bg-white'
-                  >
-                    <option value="">Select a city</option>
-                    <option value="Kigali">Kigali</option>
-                    <option value="Musanze">Musanze</option>
-                    <option value="Rubavu">Rubavu</option>
-                    <option value="Muhanga">Muhanga</option>
-                    <option value="Huye">Huye</option>
-                    <option value="Rusizi">Rusizi</option>
-                    <option value="Nyagatare">Nyagatare</option>
-                  </select>
-                </div>
-              </div>
+            <div className='space-y-1'>
+                <label className='block text-sm font-medium text-gray-700'>Location</label>
+                <select
+                onChange={e => setCar({...car, location: e.target.value})}
+                value={car.location}
+                className='block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out bg-white'
+                >
+                <option value="">Select a city</option>
+                <option value="Kigali">Kigali</option>
+                <option value="Musanze">Musanze</option>
+                <option value="Rubavu">Rubavu</option>
+                <option value="Muhanga">Muhanga</option>
+                <option value="Huye">Huye</option>
+                <option value="Rusizi">Rusizi</option>
+                <option value="Nyagatare">Nyagatare</option>
+                </select>
             </div>
 
-            {/* Description Section */}
-            <div className='space-y-6 pt-4'>
-              <div className='flex items-center space-x-2 text-gray-700'>
-                <FaAlignLeft className='text-yellow-500' />
-                <h3 className='text-base font-medium'>Description</h3>
-              </div>
-
-              <div className='space-y-1'>
-                <label className='block text-sm font-medium text-gray-700'>
-                  Car Description
-                  <span className='ml-1 text-xs text-gray-500'>(Tell renters about your car)</span>
-                </label>
-                <textarea
-                  rows={5}
-                  placeholder="Describe your car in detail. Include features, condition, special instructions, and anything else renters should know."
-                  required
-                  className='block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out'
-                  value={car.description}
-                  onChange={e => setCar({...car, description: e.target.value})}
-                ></textarea>
-                <p className='mt-1 text-xs text-gray-500'>
-                  Minimum 50 characters. Include details that make your listing stand out.
-                </p>
-              </div>
+            <div className='space-y-1'>
+              <label className='block text-sm font-medium text-gray-700'>Description</label>
+              <textarea
+                rows={5}
+                required
+                className='block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out'
+                value={car.description}
+                onChange={e => setCar({...car, description: e.target.value})}
+              ></textarea>
             </div>
 
             {/* Submit Button */}
@@ -444,31 +426,15 @@ const AddCar = () => {
                   disabled={isLoading}
                   className={`inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white ${isLoading ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out`}
                 >
-                  {isLoading ? (
-                    <>
-                      <svg className='animate-spin -ml-1 mr-3 h-5 w-5 text-white' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'>
-                        <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4'></circle>
-                        <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'></path>
-                      </svg>
-                      Processing...
-                    </>
-                  ) : (
-                    <>
-                      <svg className='-ml-1 mr-2 h-5 w-5' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor' aria-hidden='true'>
-                        <path fillRule='evenodd' d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z' clipRule='evenodd' />
-                      </svg>
-                      List My Car
-                    </>
-                  )}
+                  {isLoading ? 'Updating...' : 'Update Car Details'}
                 </button>
               </div>
             </div>
           </div>
         </form>
       </div>
-
     </div>
   );
 };
 
-export default AddCar;
+export default EditCar;

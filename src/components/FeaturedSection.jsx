@@ -12,8 +12,6 @@ const FeaturedSection = () => {
     const navigate = useNavigate()
     const {cars} = useAppContext()
 
-    console.log('📋 FeaturedSection - Cars:', cars)
-
   return (
     <motion.div
     initial={{ opacity: 0, y: 40 }}

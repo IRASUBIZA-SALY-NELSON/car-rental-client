@@ -32,11 +32,17 @@ const CarDetails = () => {
   const [financingOption, setFinancingOption] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('bank_transfer');
   const [billingAddress, setBillingAddress] = useState('');
+  const [deliveryAddress, setDeliveryAddress] = useState('');
+  const [city, setCity] = useState('');
+  const [postalCode, setPostalCode] = useState('');
+  const [country, setCountry] = useState('');
+  const [alternatePhone, setAlternatePhone] = useState('');
+  const [preferredDeliveryDate, setPreferredDeliveryDate] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
 
   // Find car from context or fallback to dummy data
-  
+
   useEffect(() => {
     let foundCar = cars.find((c) => c._id === id);
     if (!foundCar) {
@@ -60,7 +66,7 @@ const CarDetails = () => {
         rentalDuration,
         insuranceOption,
       });
-      
+
       if (data.success) {
         toast.success(data.message || 'Booking created successfully!');
         navigate('/my-bookings');
@@ -142,8 +148,8 @@ const CarDetails = () => {
             transition={{ duration: 0.5 }}
             className="mb-8"
           >
-            <Carousel 
-              images={car.images && car.images.length > 0 ? car.images : [assets.car_image1, assets.car_image2, assets.car_image3, assets.car_image4]}
+            <Carousel
+              images={[car.image, ...(car.subImages || [])]}
               autoPlay={true}
               interval={5000}
             />
@@ -283,7 +289,7 @@ const CarDetails = () => {
                     onChange={(e) => {
                       const newPickupDate = e.target.value;
                       setPickupDate(newPickupDate);
-                      
+
                       // Ensure return date is always greater than pickup date
                       if (returnDate && newPickupDate && newPickupDate >= returnDate) {
                         setReturnDate('');
@@ -308,7 +314,7 @@ const CarDetails = () => {
                     onChange={(e) => {
                       const newReturnDate = e.target.value;
                       setReturnDate(newReturnDate);
-                      
+
                       // Ensure return date is always greater than pickup date
                       if (pickupDate && newReturnDate && pickupDate >= newReturnDate) {
                         setReturnDate('');
@@ -404,7 +410,7 @@ const CarDetails = () => {
                   className="space-y-4"
                 >
                   <h3 className="font-semibold text-gray-800 border-b pb-2">Personal Information</h3>
-                  
+
                   <div className="grid grid-cols-1 gap-4">
                     <div className="flex flex-col gap-2">
                       <label className="font-medium text-gray-700">Full Name *</label>
@@ -466,7 +472,7 @@ const CarDetails = () => {
                   className="space-y-4"
                 >
                   <h3 className="font-semibold text-gray-800 border-b pb-2">Delivery Address</h3>
-                  
+
                   <div className="flex flex-col gap-2">
                     <label className="font-medium text-gray-700">Delivery Address *</label>
                     <textarea
@@ -532,7 +538,7 @@ const CarDetails = () => {
                   className="space-y-4"
                 >
                   <h3 className="font-semibold text-gray-800 border-b pb-2">Contact Information</h3>
-                  
+
                   <div className="grid grid-cols-1 gap-4">
                     <div className="flex flex-col gap-2">
                       <label className="font-medium text-gray-700">Primary Phone Number *</label>
@@ -579,7 +585,7 @@ const CarDetails = () => {
                   className="space-y-4"
                 >
                   <h3 className="font-semibold text-gray-800 border-b pb-2">Purchase Options</h3>
-                  
+
                   <div className="flex flex-col gap-2">
                     <label className="font-medium text-gray-700">Preferred Delivery Date *</label>
                     <input
@@ -641,7 +647,7 @@ const CarDetails = () => {
                   className="space-y-4"
                 >
                   <h3 className="font-semibold text-gray-800 border-b pb-2">Payment Information</h3>
-                  
+
                   <div className="flex flex-col gap-2">
                     <label className="font-medium text-gray-700">Payment Method</label>
                     <select
@@ -678,7 +684,7 @@ const CarDetails = () => {
                   className="space-y-4"
                 >
                   <h3 className="font-semibold text-gray-800 border-b pb-2">Legal Agreements</h3>
-                  
+
                   <div className="space-y-3">
                     <div className="flex items-start gap-3">
                       <input

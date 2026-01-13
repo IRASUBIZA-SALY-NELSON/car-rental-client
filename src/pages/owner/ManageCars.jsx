@@ -134,7 +134,7 @@ const ManageCars = () => {
               <tr key={index} className='hover:bg-gray-50 transition-colors duration-150'>
 
                 <td className='p-3 flex items-center gap-3'>
-                  <img src={car.images?.[0] || car.image} alt="" className="h-12 w-12 aspect-square rounded-md object-cover"/>
+                  <img src={car.image || car.images?.[0]} alt="" className="h-12 w-12 aspect-square rounded-md object-cover"/>
                   <div className='max-md:hidden'>
                     <p className='font-medium'>{car.brand} {car.model}</p>
                     <p className='text-xs text-gray-500'>{car.seating_capacity} • {car.transmission}</p>
@@ -178,6 +178,14 @@ const ManageCars = () => {
                         alt=""
                         className='w-6 h-6 min-w-[24px] object-contain'
                       />
+                    </button>
+
+                    <button
+                      onClick={()=> navigate(`/owner/edit-car/${car._id}`)}
+                      className="p-3.5 rounded-xl border border-blue-100 bg-blue-50 transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 hover:bg-blue-100 hover:border-blue-200"
+                      title="Edit Car"
+                    >
+                      <img src={assets.edit_icon} alt="" className='w-6 h-6 min-w-[24px] object-contain'/>
                     </button>
 
                     <button

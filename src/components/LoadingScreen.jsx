@@ -16,7 +16,7 @@ const LoadingScreen = () => {
            <div className="w-2 h-2 bg-primary rounded-full animate-bounce delay-300"></div>
         </div>
       </div>
-      <style jsx>{`
+      <style>{`
         @keyframes pulse-custom {
           0%, 100% { transform: scale(1); opacity: 1; }
           50% { transform: scale(0.9); opacity: 0.8; }

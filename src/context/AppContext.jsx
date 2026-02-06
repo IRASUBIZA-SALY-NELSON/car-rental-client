@@ -43,7 +43,7 @@ export const AppProvider = ({ children })=>{
     const [pickupDate, setPickupDate] = useState('')
     const [returnDate, setReturnDate] = useState('')
     const [cars, setCars] = useState([])
-    const [appLoading, setAppLoading] = useState(true)
+    const [appLoading, setAppLoading] = useState(false)
 
     // Function to check if user is logged in
     const fetchUser = async ()=>{
@@ -92,27 +92,15 @@ export const AppProvider = ({ children })=>{
     // Initialize App
     useEffect(()=>{
         const initApp = async () => {
-            // Keep loading screen for at least 3 seconds (animation effect) + data fetch time
-            const minLoadTime = new Promise(resolve => setTimeout(resolve, 2500));
-
-            setAppLoading(true);
             const storedToken = localStorage.getItem('token');
             setToken(storedToken);
 
-            const fetchPromises = [fetchCars()];
-
             if (storedToken) {
                 axios.defaults.headers.common['Authorization'] = storedToken;
-                fetchPromises.push(fetchUser());
+                fetchUser();
             }
 
-            try {
-                await Promise.all([minLoadTime, ...fetchPromises]);
-            } catch (error) {
-                console.error("Initialization error:", error);
-            } finally {
-                setAppLoading(false);
-            }
+            fetchCars();
         };
         initApp();
     },[])

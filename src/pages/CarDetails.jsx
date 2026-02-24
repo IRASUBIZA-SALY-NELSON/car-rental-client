@@ -11,7 +11,7 @@ import Carousel from '../components/Carousel';
 const CarDetails = () => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
-  const { cars, axios, pickupDate, setPickupDate, returnDate, setReturnDate, currency } = useAppContext();
+  const { cars, axios, pickupDate, setPickupDate, returnDate, setReturnDate, currency, token, setToken, setUser } = useAppContext();
   const navigate = useNavigate();
 
   const [car, setCar] = useState(null);
@@ -41,6 +41,8 @@ const CarDetails = () => {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [showBookingModal, setShowBookingModal] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [savedFormData, setSavedFormData] = useState(null);
 
   // Find car from context or fallback to dummy data
 
@@ -53,6 +55,20 @@ const CarDetails = () => {
 
   const handleRentSubmit = async (e) => {
     e.preventDefault();
+
+    // Check if user is authenticated
+    if (!token) {
+      // Save form data and show auth modal
+      setSavedFormData({
+        fullName,
+        email,
+        phone,
+        location,
+        rentalDuration
+      });
+      setShowAuthModal(true);
+      return;
+    }
 
     // Validate required fields
     if (!phone.trim()) {
@@ -157,7 +173,13 @@ const CarDetails = () => {
                 { icon: assets.users_icon, text: `${car.seating_capacity} Seats` },
                 { icon: assets.fuel_icon, text: car.fuel_type },
                 { icon: assets.car_icon, text: car.transmission },
-                { icon: assets.location_icon, text: car.location },
+                { icon: assets.location_icon, text: Array.isArray(car.location) ? (
+  car.location.includes('all-cities') ? (
+    'All Cities'
+  ) : (
+    car.location.length > 3 ? `${car.location.slice(0, 3).join(', ')} +${car.location.length - 3}` : car.location.join(', ')
+  )
+) : car.location },
               ].map(({ icon, text }, index) => (
                 <motion.div
                   key={text}
@@ -371,6 +393,136 @@ const CarDetails = () => {
                       className="flex-1 px-6 py-3 bg-gradient-to-r from-primary to-primary-dull text-white font-semibold rounded-lg hover:from-primary-dull hover:to-primary transition-all"
                     >
                       Confirm Booking
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Authentication Modal */}
+        {showAuthModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-white rounded-3xl shadow-2xl max-w-md w-full"
+            >
+              <div className="p-8">
+                {/* Modal Header */}
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-bold text-gray-800">Create Account to Continue</h2>
+                  <button
+                    onClick={() => setShowAuthModal(false)}
+                    className="text-gray-400 hover:text-gray-600 text-2xl font-bold"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                <p className="text-gray-600 mb-6">
+                  Join us to complete your booking for the {car?.name || 'car'}.
+                </p>
+
+                {/* Registration Form */}
+                <form onSubmit={async (e) => {
+                  e.preventDefault();
+                  try {
+                    const formData = new FormData(e.target);
+                    const payload = {
+                      name: formData.get('name'),
+                      email: formData.get('email'),
+                      password: formData.get('password'),
+                      phone: savedFormData?.phone || formData.get('phone'),
+                      location: savedFormData?.location || ''
+                    };
+
+                    const { data } = await axios.post('/api/user/register', payload);
+
+                    if (data.success) {
+                      setToken(data.token);
+                      localStorage.setItem('token', data.token);
+                      setUser({ name: payload.name, email: payload.email });
+
+                      toast.success('Account created successfully!');
+                      setShowAuthModal(false);
+
+                      // Restore saved form data
+                      if (savedFormData) {
+                        setFullName(savedFormData.fullName);
+                        setEmail(savedFormData.email);
+                        setPhone(savedFormData.phone);
+                        setLocation(savedFormData.location);
+                        setRentalDuration(savedFormData.rentalDuration);
+                      }
+
+                      // Show booking modal again
+                      setShowBookingModal(true);
+                    } else {
+                      toast.error(data.message || 'Registration failed');
+                    }
+                  } catch (error) {
+                    toast.error(error.response?.data?.message || error.message || 'Registration failed');
+                  }
+                }} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                    <input
+                      type="text"
+                      name="name"
+                      defaultValue={savedFormData?.fullName || ''}
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <input
+                      type="email"
+                      name="email"
+                      defaultValue={savedFormData?.email || ''}
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <input
+                      type="password"
+                      name="password"
+                      required
+                      minLength="6"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      defaultValue={savedFormData?.phone || ''}
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    />
+                  </div>
+
+                  <div className="flex gap-4 pt-4">
+                    <button
+                      type="button"
+                      onClick={() => setShowAuthModal(false)}
+                      className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="flex-1 px-6 py-3 bg-gradient-to-r from-primary to-primary-dull text-white font-semibold rounded-lg hover:from-primary-dull hover:to-primary transition-all"
+                    >
+                      Create Account
                     </button>
                   </div>
                 </form>

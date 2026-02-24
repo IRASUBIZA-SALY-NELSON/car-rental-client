@@ -128,7 +128,17 @@ const CarCardNew = ({ car }) => {
           </div>
           <div className="flex items-center">
             <img src={assets.location_icon} className="h-4 mr-2" />
-            {car.location}
+            {Array.isArray(car.location) ? (
+              car.location.includes('all-cities') ? (
+                <span className="text-sm">All Cities</span>
+              ) : (
+                <span className="text-sm">
+                  {car.location.length > 2 ? `${car.location.slice(0, 2).join(', ')} +${car.location.length - 2}` : car.location.join(', ')}
+                </span>
+              )
+            ) : (
+              <span className="text-sm">{car.location}</span>
+            )}
           </div>
         </div>
 

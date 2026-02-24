@@ -30,10 +30,18 @@ const Cars = () => {
     }
 
     const filtered = cars.slice().filter((car)=>{
-      return car.brand.toLowerCase().includes(input.toLowerCase())
-      || car.model.toLowerCase().includes(input.toLowerCase())
-      || car.category.toLowerCase().includes(input.toLowerCase())
-      || car.transmission.toLowerCase().includes(input.toLowerCase())
+      // Handle location array for multi-city support
+      const locationMatch = Array.isArray(car.location)
+        ? car.location.includes('all-cities') || car.location.some(loc =>
+            loc.toLowerCase().includes(input.toLowerCase())
+          )
+        : car.location.toLowerCase().includes(input.toLowerCase());
+
+      return locationMatch ||
+        car.brand.toLowerCase().includes(input.toLowerCase()) ||
+        car.model.toLowerCase().includes(input.toLowerCase()) ||
+        car.category.toLowerCase().includes(input.toLowerCase()) ||
+        car.transmission.toLowerCase().includes(input.toLowerCase());
     })
     setFilteredCars(filtered)
   }

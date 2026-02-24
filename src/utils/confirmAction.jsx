@@ -55,7 +55,7 @@ export const confirmAction = (message, onConfirm, options = {}) => {
             className={`flex-1 px-6 py-3 text-white text-sm font-bold rounded-xl shadow-sm transition-all active:scale-95 cursor-pointer ${
                 danger
                   ? 'bg-[#0f4e3b] hover:bg-[#12614a] shadow-emerald-100'
-                  : 'bg-blue-600 hover:bg-blue-700 shadow-blue-100'
+                  : 'bg-[#0f4e3b] hover:bg-[#12614a] shadow-emerald-100'
             }`}
           >
             {confirmText}

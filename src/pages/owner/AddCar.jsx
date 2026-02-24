@@ -22,12 +22,11 @@ const AddCar = () => {
     model: '',
     year: 0,
     pricePerDay: 0,
-    purchasePrice: 0,
     category: '',
     transmission: '',
     fuel_type: '',
     seating_capacity: 0,
-    location: '',
+    location: [],
     description: '',
   })
 
@@ -61,12 +60,11 @@ const AddCar = () => {
           model: '',
           year: 0,
           pricePerDay: 0,
-          purchasePrice: 0,
           category: '',
           transmission: '',
           fuel_type: '',
           seating_capacity: 0,
-          location: '',
+          location: [],
           description: '',
         })
       }else{
@@ -295,30 +293,6 @@ const AddCar = () => {
                     </div>
                   </div>
                 </div>
-                <div className='space-y-1'>
-                  <label className='block text-sm font-medium text-gray-700'>
-                    Purchase Price ({currency})
-                    <span className='ml-1 text-xs text-gray-500'>(required)</span>
-                  </label>
-                  <div className='relative rounded-md shadow-sm'>
-                    <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-                      <span className='text-gray-500 sm:text-sm'>$</span>
-                    </div>
-                    <input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      placeholder="25000.00"
-                      required
-                      className='block w-full pl-7 pr-12 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out'
-                      value={car.purchasePrice}
-                      onChange={e => setCar({...car, purchasePrice: e.target.value})}
-                    />
-                    <div className='absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none'>
-                      <span className='text-gray-500 sm:text-sm'>{currency}</span>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
 
@@ -386,27 +360,60 @@ const AddCar = () => {
             <div className='space-y-6 pt-4'>
               <div className='flex items-center space-x-2 text-gray-700'>
                 <FaMapMarkerAlt className='text-red-500' />
-                <h3 className='text-base font-medium'>Location</h3>
+                <h3 className='text-base font-medium'>Available Cities</h3>
               </div>
 
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                <div className='space-y-1'>
-                  <label className='block text-sm font-medium text-gray-700'>City</label>
-                  <select
-                    onChange={e => setCar({...car, location: e.target.value})}
-                    value={car.location}
-                    className='block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out bg-white'
-                  >
-                    <option value="">Select a city</option>
-                    <option value="Kigali">Kigali</option>
-                    <option value="Musanze">Musanze</option>
-                    <option value="Rubavu">Rubavu</option>
-                    <option value="Muhanga">Muhanga</option>
-                    <option value="Huye">Huye</option>
-                    <option value="Rusizi">Rusizi</option>
-                    <option value="Nyagatare">Nyagatare</option>
-                  </select>
+              <div className='space-y-4'>
+                <div className='space-y-2'>
+                  <label className='flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors'>
+                    <input
+                      type="checkbox"
+                      checked={car.location.includes('all-cities')}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setCar({...car, location: ['all-cities']});
+                        } else {
+                          setCar({...car, location: []});
+                        }
+                      }}
+                      className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+                    />
+                    <span className="text-sm font-medium text-gray-700">All Cities</span>
+                  </label>
                 </div>
+
+                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3'>
+                  {[
+                    'Kigali', 'Musanze', 'Rubavu', 'Muhanga',
+                    'Huye', 'Rusizi', 'Nyagatare', 'Nyabugogo',
+                    'Gicumbi', 'Kirehe', 'Gatsibo', 'Kayonza'
+                  ].map(city => (
+                    <label key={city} className='flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors'>
+                      <input
+                        type="checkbox"
+                        checked={car.location.includes(city)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setCar({...car, location: [...car.location.filter(loc => loc !== 'all-cities'), city]});
+                          } else {
+                            setCar({...car, location: car.location.filter(loc => loc !== city)});
+                          }
+                        }}
+                        disabled={car.location.includes('all-cities')}
+                        className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary disabled:opacity-50"
+                      />
+                      <span className="text-sm font-medium text-gray-700">{city}</span>
+                    </label>
+                  ))}
+                </div>
+
+                {car.location.length > 0 && (
+                  <div className="mt-3 p-3 bg-blue-50 rounded-lg">
+                    <p className="text-sm text-blue-800">
+                      Selected: {car.location.includes('all-cities') ? 'All Cities' : car.location.join(', ')}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 

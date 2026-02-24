@@ -52,7 +52,7 @@ const App = () => {
       {!isOwnerPath && (
         <motion.button
           onClick={() => setContactModalOpen(true)}
-          className="fixed bottom-6 right-6 z-40 w-14 h-14 bg-[#FF6F00] text-white rounded-full shadow-lg hover:bg-[#E65C00] transition-all duration-300 flex items-center justify-center group hover:scale-110"
+          className="fixed bottom-6 right-6 z-40 w-14 h-14 bg-[#E91E63] text-white rounded-full shadow-lg hover:bg-[#D81B60] transition-all duration-300 flex items-center justify-center group hover:scale-110"
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 1, type: "spring", stiffness: 200 }}
@@ -109,11 +109,11 @@ const App = () => {
                   {/* Phone */}
                   <motion.a
                     href="tel:+250788888577"
-                    className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-[#FF6F00]/10 to-[#FF6F00]/5 hover:from-[#FF6F00]/20 hover:to-[#FF6F00]/10 transition-all group"
+                    className="flex items-center gap-4 p-4 rounded-lg bg-[#FFF7ED] hover:bg-[#FFEDD5] transition-colors"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <div className="flex-shrink-0 w-12 h-12 bg-[#FF6F00] rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <div className="p-3 bg-[#FF6F00] rounded-full">
                       <Phone className="w-6 h-6 text-white" />
                     </div>
                     <div className="flex-1">
@@ -125,11 +125,11 @@ const App = () => {
                   {/* Email */}
                   <motion.a
                     href="mailto:info@rodstcompany.rw"
-                    className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-[#FF6F00]/10 to-[#FF6F00]/5 hover:from-[#FF6F00]/20 hover:to-[#FF6F00]/10 transition-all group"
+                    className="flex items-center gap-4 p-4 rounded-lg bg-[#FFF7ED] hover:bg-[#FFEDD5] transition-colors"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <div className="flex-shrink-0 w-12 h-12 bg-[#FF6F00] rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <div className="p-3 bg-[#FF6F00] rounded-full">
                       <svg
                         className="w-6 h-6 text-white"
                         fill="none"
@@ -152,10 +152,10 @@ const App = () => {
 
                   {/* Location */}
                   <motion.div
-                    className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-[#FF6F00]/10 to-[#FF6F00]/5"
+                    className="flex items-center gap-4 p-4 rounded-lg bg-[#FFF7ED]"
                     whileHover={{ scale: 1.02 }}
                   >
-                    <div className="flex-shrink-0 w-12 h-12 bg-[#FF6F00] rounded-full flex items-center justify-center">
+                    <div className="p-3 bg-[#FF6F00] rounded-full">
                       <svg
                         className="w-6 h-6 text-white"
                         fill="none"

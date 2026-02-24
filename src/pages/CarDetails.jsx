@@ -53,20 +53,33 @@ const CarDetails = () => {
 
   const handleRentSubmit = async (e) => {
     e.preventDefault();
+
+    // Validate required fields
+    if (!phone.trim()) {
+      toast.error('Phone number is required');
+      return;
+    }
+
+    if (!fullName.trim()) {
+      toast.error('Full name is required');
+      return;
+    }
+
     try {
+      // Calculate pickup and return dates
+      const pickupDate = new Date();
+      const returnDate = new Date();
+      returnDate.setDate(pickupDate.getDate() + parseInt(rentalDuration));
+
       const { data } = await axios.post('/api/bookings/create', {
         car: id,
-        pickupDate,
-        returnDate,
-        location,
-        phoneNumber: phone,
-        driverLicense,
-        rentalDuration,
-        insuranceOption,
+        pickupDate: pickupDate.toISOString(),
+        returnDate: returnDate.toISOString(),
       });
 
       if (data.success) {
         toast.success(data.message || 'Booking created successfully!');
+        setShowBookingModal(false);
         navigate('/my-bookings');
       } else {
         toast.error(data.message || 'Failed to create booking');
@@ -229,7 +242,7 @@ const CarDetails = () => {
 
       {/* Booking Modal */}
         {showBookingModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="fixed inset-0 bg-transparent flex items-center justify-center p-4 z-50">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}

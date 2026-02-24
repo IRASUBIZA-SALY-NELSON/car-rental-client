@@ -119,7 +119,6 @@ const CarDetails = () => {
 
   return (
     <div className="px-6 md:px-16 lg:px-24 xl:px-32 mt-16">
-      {/* Back Button */}
       <motion.button
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
@@ -236,506 +235,215 @@ const CarDetails = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.3 }}
           onSubmit={mode === 'rent' ? handleRentSubmit : handleBuySubmit}
-          className="lg:sticky lg:top-24 h-max bg-white shadow-2xl rounded-2xl p-8 space-y-6 border border-gray-100"
+          className="lg:sticky lg:top-24 h-max bg-white shadow-2xl rounded-3xl p-8 border border-gray-100"
         >
           {/* Mode Selection */}
-          <div className="flex bg-gray-100 rounded-lg p-1">
+          <div className="flex bg-gray-100 rounded-lg p-1 mb-8">
             <button
               type="button"
               onClick={() => setMode('rent')}
-              className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${
+              className={`flex-1 py-3 px-4 rounded-md text-sm font-medium transition-all ${
                 mode === 'rent' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500'
               }`}
             >
-              Rent
+              🚗 Rent
             </button>
             <button
               type="button"
               onClick={() => setMode('buy')}
-              className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${
+              className={`flex-1 py-3 px-4 rounded-md text-sm font-medium transition-all ${
                 mode === 'buy' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500'
               }`}
             >
-              Buy
+              🔑 Buy
             </button>
           </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="flex items-end gap-2"
-          >
-            <span className="text-4xl font-bold text-gray-900">
-              {currency}{mode === 'rent' ? car.pricePerDay.toLocaleString() : car.purchasePrice.toLocaleString()}
-            </span>
-            <span className="text-gray-500">{mode === 'rent' ? '/ day' : ''}</span>
-          </motion.div>
+          {mode === 'rent' && (
+            <>
+              {/* Pricing Display */}
+              <div className="bg-gradient-to-r from-primary to-primary-dull rounded-2xl p-6 text-white mb-8">
+                <div className="flex items-baseline gap-2 mb-2">
+                  <span className="text-5xl font-bold">
+                    {currency}{car.pricePerDay.toLocaleString()}
+                  </span>
+                  <span className="text-xl opacity-90">/ day</span>
+                </div>
+                <p className="text-white/80 text-sm">
+                  Flexible rental terms available
+                </p>
+              </div>
 
-          <hr className="border-gray-200 my-6" />
+              {/* Booking Steps */}
+              <div className="space-y-6">
+                {/* Step 1: Date Selection */}
+                <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-bold">1</div>
+                    <h3 className="text-lg font-semibold text-gray-800">Select Your Dates</h3>
+                  </div>
 
-          <div className="space-y-5">
-            {mode === 'rent' && (
-              <>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.1 }}
-                  className="flex flex-col gap-2"
-                >
-                  <label htmlFor="pickup-date" className="font-medium text-gray-700">Pickup Date</label>
-                  <input
-                    value={pickupDate}
-                    onChange={(e) => {
-                      const newPickupDate = e.target.value;
-                      setPickupDate(newPickupDate);
-
-                      // Ensure return date is always greater than pickup date
-                      if (returnDate && newPickupDate && newPickupDate >= returnDate) {
-                        setReturnDate('');
-                      }
-                    }}
-                    type="date"
-                    required
-                    min={new Date().toISOString().split('T')[0]}
-                    className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                  />
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                  className="flex flex-col gap-2"
-                >
-                  <label htmlFor="return-date" className="font-medium text-gray-700">Return Date</label>
-                  <input
-                    value={returnDate}
-                    onChange={(e) => {
-                      const newReturnDate = e.target.value;
-                      setReturnDate(newReturnDate);
-
-                      // Ensure return date is always greater than pickup date
-                      if (pickupDate && newReturnDate && pickupDate >= newReturnDate) {
-                        setReturnDate('');
-                      }
-                    }}
-                    type="date"
-                    required
-                    min={pickupDate ? new Date(new Date(pickupDate).getTime() + 24 * 60 * 60 * 1000).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]}
-                    className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                  />
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.3 }}
-                  className="flex flex-col gap-2"
-                >
-                  <label htmlFor="driver-license" className="font-medium text-gray-700">Driver's License *</label>
-                  <input
-                    value={driverLicense}
-                    onChange={(e) => setDriverLicense(e.target.value)}
-                    type="text"
-                    placeholder="Enter your driver's license number"
-                    required
-                    className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                  />
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.4 }}
-                  className="flex flex-col gap-2"
-                >
-                  <label htmlFor="rental-duration" className="font-medium text-gray-700">Rental Duration *</label>
-                  <select
-                    value={rentalDuration}
-                    onChange={(e) => setRentalDuration(e.target.value)}
-                    required
-                    className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                  >
-                    <option value="1">1 Day</option>
-                    <option value="3">3 Days</option>
-                    <option value="7">1 Week</option>
-                    <option value="30">1 Month</option>
-                  </select>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.5 }}
-                  className="flex flex-col gap-2"
-                >
-                  <label htmlFor="location" className="font-medium text-gray-700">Pickup Location *</label>
-                  <input
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    type="text"
-                    placeholder="e.g. Kigali, Rwanda"
-                    required
-                    className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                  />
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.6 }}
-                  className="flex flex-col gap-2"
-                >
-                  <label htmlFor="phone" className="font-medium text-gray-700">Phone Number *</label>
-                  <input
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    type="tel"
-                    placeholder="+250 7XX XXX XXX"
-                    required
-                    className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                  />
-                </motion.div>
-              </>
-            )}
-
-            {mode === 'buy' && (
-              <>
-                {/* Personal Information */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.1 }}
-                  className="space-y-4"
-                >
-                  <h3 className="font-semibold text-gray-800 border-b pb-2">Personal Information</h3>
-
-                  <div className="grid grid-cols-1 gap-4">
-                    <div className="flex flex-col gap-2">
-                      <label className="font-medium text-gray-700">Full Name *</label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                        <span className="text-lg">📅</span> Pickup Date
+                      </label>
                       <input
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
+                        value={pickupDate}
+                        onChange={(e) => {
+                          const newPickupDate = e.target.value;
+                          setPickupDate(newPickupDate);
+                          if (returnDate && newPickupDate && newPickupDate >= returnDate) {
+                            setReturnDate('');
+                          }
+                        }}
+                        type="date"
+                        required
+                        min={new Date().toISOString().split('T')[0]}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-white hover:bg-gray-50"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                        <span className="text-lg">📅</span> Return Date
+                      </label>
+                      <input
+                        value={returnDate}
+                        onChange={(e) => {
+                          const newReturnDate = e.target.value;
+                          setReturnDate(newReturnDate);
+                          if (pickupDate && newReturnDate && pickupDate >= newReturnDate) {
+                            setReturnDate('');
+                          }
+                        }}
+                        type="date"
+                        required
+                        min={pickupDate ? new Date(new Date(pickupDate).getTime() + 24 * 60 * 60 * 1000).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-white hover:bg-gray-50"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Step 2: Driver Info */}
+                <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-bold">2</div>
+                    <h3 className="text-lg font-semibold text-gray-800">Driver Information</h3>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                        <span className="text-lg">🪪</span> Driver's License
+                      </label>
+                      <input
+                        value={driverLicense}
+                        onChange={(e) => setDriverLicense(e.target.value)}
                         type="text"
-                        placeholder="Enter your full name"
+                        placeholder="Enter your driver's license number"
                         required
-                        className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-white hover:bg-gray-50"
                       />
                     </div>
 
-                    <div className="flex flex-col gap-2">
-                      <label className="font-medium text-gray-700">Email Address *</label>
-                      <input
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        type="email"
-                        placeholder="your.email@example.com"
-                        required
-                        className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="flex flex-col gap-2">
-                        <label className="font-medium text-gray-700">ID/Passport Number *</label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                          <span className="text-lg">📞</span> Phone
+                        </label>
                         <input
-                          value={idNumber}
-                          onChange={(e) => setIdNumber(e.target.value)}
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          type="tel"
+                          placeholder="+250 7XX XXX XXX"
+                          required
+                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-white hover:bg-gray-50"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                          <span className="text-lg">📍</span> Pickup Location
+                        </label>
+                        <input
+                          value={location}
+                          onChange={(e) => setLocation(e.target.value)}
                           type="text"
-                          placeholder="123456789"
+                          placeholder="e.g. Kigali, Rwanda"
                           required
-                          className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                        />
-                      </div>
-
-                      <div className="flex flex-col gap-2">
-                        <label className="font-medium text-gray-700">Date of Birth *</label>
-                        <input
-                          value={dateOfBirth}
-                          onChange={(e) => setDateOfBirth(e.target.value)}
-                          type="date"
-                          required
-                          max={new Date().toISOString().split('T')[0]}
-                          className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-white hover:bg-gray-50"
                         />
                       </div>
                     </div>
                   </div>
-                </motion.div>
+                </div>
 
-                {/* Delivery Address */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                  className="space-y-4"
-                >
-                  <h3 className="font-semibold text-gray-800 border-b pb-2">Delivery Address</h3>
-
-                  <div className="flex flex-col gap-2">
-                    <label className="font-medium text-gray-700">Delivery Address *</label>
-                    <textarea
-                      value={deliveryAddress}
-                      onChange={(e) => setDeliveryAddress(e.target.value)}
-                      placeholder="Enter your complete delivery address"
-                      required
-                      rows={3}
-                      className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                    />
+                {/* Step 3: Rental Options */}
+                <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-bold">3</div>
+                    <h3 className="text-lg font-semibold text-gray-800">Rental Options</h3>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="flex flex-col gap-2">
-                      <label className="font-medium text-gray-700">City *</label>
-                      <input
-                        value={city}
-                        onChange={(e) => setCity(e.target.value)}
-                        type="text"
-                        placeholder="City"
-                        required
-                        className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                      />
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                      <label className="font-medium text-gray-700">Postal Code *</label>
-                      <input
-                        value={postalCode}
-                        onChange={(e) => setPostalCode(e.target.value)}
-                        type="text"
-                        placeholder="12345"
-                        required
-                        className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col gap-2">
-                    <label className="font-medium text-gray-700">Country *</label>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">Rental Duration</label>
                     <select
-                      value={country}
-                      onChange={(e) => setCountry(e.target.value)}
+                      value={rentalDuration}
+                      onChange={(e) => setRentalDuration(e.target.value)}
                       required
-                      className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all bg-white hover:bg-gray-50 appearance-none cursor-pointer"
                     >
-                      <option value="">Select Country</option>
-                      <option value="Rwanda">Rwanda</option>
-                      <option value="Kenya">Kenya</option>
-                      <option value="Tanzania">Tanzania</option>
-                      <option value="Uganda">Uganda</option>
-                      <option value="Burundi">Burundi</option>
-                      <option value="Democratic Republic of Congo">Democratic Republic of Congo</option>
+                      <option value="1">1 Day</option>
+                      <option value="3">3 Days</option>
+                      <option value="7">1 Week</option>
+                      <option value="30">1 Month</option>
                     </select>
                   </div>
-                </motion.div>
+                </div>
+              </div>
 
-                {/* Contact Information */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.3 }}
-                  className="space-y-4"
-                >
-                  <h3 className="font-semibold text-gray-800 border-b pb-2">Contact Information</h3>
+              {/* Book Button */}
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                type="submit"
+                className="w-full bg-gradient-to-r from-primary to-primary-dull hover:from-primary-dull hover:to-primary text-white font-bold py-4 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              >
+                <div className="flex items-center justify-center gap-2">
+                  <span>🚗</span>
+                  <span>Book Now</span>
+                </div>
+              </motion.button>
 
-                  <div className="grid grid-cols-1 gap-4">
-                    <div className="flex flex-col gap-2">
-                      <label className="font-medium text-gray-700">Primary Phone Number *</label>
-                      <input
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        type="tel"
-                        placeholder="+250 7XX XXX XXX"
-                        required
-                        className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                      />
-                    </div>
+              {/* Trust Badge */}
+              <div className="text-center">
+                <p className="text-sm text-gray-500 flex items-center justify-center gap-2">
+                  <span className="text-green-500">🔒</span>
+                  No credit card required to reserve
+                </p>
+              </div>
+            </>
+          )}
 
-                    <div className="flex flex-col gap-2">
-                      <label className="font-medium text-gray-700">Alternate Phone Number</label>
-                      <input
-                        value={alternatePhone}
-                        onChange={(e) => setAlternatePhone(e.target.value)}
-                        type="tel"
-                        placeholder="+250 7XX XXX XXX"
-                        className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                      />
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                      <label className="font-medium text-gray-700">Preferred Delivery Location *</label>
-                      <input
-                        value={location}
-                        onChange={(e) => setLocation(e.target.value)}
-                        type="text"
-                        placeholder="e.g. Kigali, Rwanda"
-                        required
-                        className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                      />
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* Purchase Options */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.4 }}
-                  className="space-y-4"
-                >
-                  <h3 className="font-semibold text-gray-800 border-b pb-2">Purchase Options</h3>
-
-                  <div className="flex flex-col gap-2">
-                    <label className="font-medium text-gray-700">Preferred Delivery Date *</label>
-                    <input
-                      value={preferredDeliveryDate}
-                      onChange={(e) => setPreferredDeliveryDate(e.target.value)}
-                      type="date"
-                      required
-                      min={new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}
-                      className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 gap-4">
-                    <div className="flex flex-col gap-2">
-                      <label className="font-medium text-gray-700">Insurance Option</label>
-                      <select
-                        value={insuranceOption}
-                        onChange={(e) => setInsuranceOption(e.target.value)}
-                        className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                      >
-                        <option value="basic">Basic Insurance (+$500)</option>
-                        <option value="comprehensive">Comprehensive Insurance (+$1,200)</option>
-                        <option value="none">No Insurance</option>
-                      </select>
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                      <label className="font-medium text-gray-700">Warranty Option</label>
-                      <select
-                        value={warrantyOption}
-                        onChange={(e) => setWarrantyOption(e.target.value)}
-                        className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                      >
-                        <option value="1year">1 Year Warranty (+$300)</option>
-                        <option value="2years">2 Years Warranty (+$500)</option>
-                        <option value="3years">3 Years Warranty (+$700)</option>
-                        <option value="none">No Extended Warranty</option>
-                      </select>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="checkbox"
-                        id="financing"
-                        checked={financingOption}
-                        onChange={(e) => setFinancingOption(e.target.checked)}
-                        className="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded"
-                      />
-                      <label htmlFor="financing" className="text-gray-700">Apply for financing options</label>
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* Payment Information */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.5 }}
-                  className="space-y-4"
-                >
-                  <h3 className="font-semibold text-gray-800 border-b pb-2">Payment Information</h3>
-
-                  <div className="flex flex-col gap-2">
-                    <label className="font-medium text-gray-700">Payment Method</label>
-                    <select
-                      value={paymentMethod}
-                      onChange={(e) => setPaymentMethod(e.target.value)}
-                      className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                    >
-                      <option value="bank_transfer">Bank Transfer</option>
-                      <option value="credit_card">Credit Card</option>
-                      <option value="cash">Cash on Delivery</option>
-                      <option value="check">Check</option>
-                    </select>
-                  </div>
-
-                  {(paymentMethod === 'credit_card' || paymentMethod === 'bank_transfer') && (
-                    <div className="flex flex-col gap-2">
-                      <label className="font-medium text-gray-700">Billing Address (if different from delivery)</label>
-                      <textarea
-                        value={billingAddress}
-                        onChange={(e) => setBillingAddress(e.target.value)}
-                        placeholder="Enter billing address if different from delivery address"
-                        rows={2}
-                        className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                      />
-                    </div>
-                  )}
-                </motion.div>
-
-                {/* Legal Agreements */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.6 }}
-                  className="space-y-4"
-                >
-                  <h3 className="font-semibold text-gray-800 border-b pb-2">Legal Agreements</h3>
-
-                  <div className="space-y-3">
-                    <div className="flex items-start gap-3">
-                      <input
-                        type="checkbox"
-                        id="terms"
-                        checked={termsAccepted}
-                        onChange={(e) => setTermsAccepted(e.target.checked)}
-                        required
-                        className="w-4 h-4 mt-1 text-primary focus:ring-primary border-gray-300 rounded"
-                      />
-                      <label htmlFor="terms" className="text-sm text-gray-700">
-                        I agree to the <a href="#" className="text-primary hover:underline">Terms and Conditions</a> *
-                      </label>
-                    </div>
-
-                    <div className="flex items-start gap-3">
-                      <input
-                        type="checkbox"
-                        id="privacy"
-                        checked={privacyAccepted}
-                        onChange={(e) => setPrivacyAccepted(e.target.checked)}
-                        required
-                        className="w-4 h-4 mt-1 text-primary focus:ring-primary border-gray-300 rounded"
-                      />
-                      <label htmlFor="privacy" className="text-sm text-gray-700">
-                        I agree to the <a href="#" className="text-primary hover:underline">Privacy Policy</a> *
-                      </label>
-                    </div>
-                  </div>
-                </motion.div>
-              </>
-            )}
-          </div>
-
-          <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            type="submit"
-            className="w-full bg-primary hover:bg-primary-dull text-white font-semibold py-4 rounded-xl transition-all duration-300 mt-4"
-          >
-            {mode === 'rent' ? 'Book Now' : 'Complete Purchase'}
-          </motion.button>
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-            className="text-center text-sm text-gray-500 mt-2"
-          >
-            {mode === 'rent' ? 'No credit card required to reserve' : 'All information is securely encrypted'}
-          </motion.p>
+          {mode === 'buy' && (
+            <div className="text-center py-12">
+              <div className="mb-6">
+                <span className="text-6xl">🚧</span>
+              </div>
+              <h3 className="text-2xl font-bold text-gray-800 mb-4">Purchase Option Coming Soon</h3>
+              <p className="text-gray-600 mb-6">
+                Our car purchase service is currently under development. Please use the rental option for now.
+              </p>
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                <p className="text-blue-800 text-sm">
+                  <strong>Need to buy a car?</strong> Contact our sales team directly at
+                  <a href="tel:+250788123456" className="text-primary hover:underline ml-1">+250 788 123 456</a>
+                </p>
+              </div>
+            </div>
+          )}
         </motion.form>
       </div>
     </div>

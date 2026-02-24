@@ -142,16 +142,6 @@ const CarCardNew = ({ car }) => {
           >
             Rent
           </button>
-
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              navigate(`/car-details/${car._id}?mode=buy`);
-            }}
-            className="flex-1 bg-green-600 text-white py-2 rounded-lg text-sm"
-          >
-            Buy
-          </button>
         </div>
       </div>
     </div>

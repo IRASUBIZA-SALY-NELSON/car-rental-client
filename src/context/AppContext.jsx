@@ -2,7 +2,6 @@ import { createContext, useContext, useEffect, useState } from "react";
 import axios from 'axios'
 import {toast} from 'react-hot-toast'
 import { useNavigate } from "react-router-dom";
-import { dummyCarData } from '../assets/assets';
 import LoadingScreen from "../components/LoadingScreen";
 
 axios.defaults.baseURL = import.meta.env.VITE_BASE_URL
@@ -69,12 +68,12 @@ export const AppProvider = ({ children })=>{
             if (data.success) {
                 setCars(data.cars)
             } else {
-                console.log('❌ Backend failed, using dummy data')
-                setCars(dummyCarData)
+                console.log('❌ Backend failed')
+                setCars([])
             }
         } catch (error) {
-            console.error('❌ Error fetching cars, using dummy data:', error.message)
-            setCars(dummyCarData)
+            console.error('❌ Error fetching cars:', error.message)
+            setCars([])
         }
     }
 

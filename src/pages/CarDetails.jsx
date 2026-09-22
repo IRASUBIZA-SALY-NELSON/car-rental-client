@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { assets, dummyCarData } from '../assets/assets';
+import { assets } from '../assets/assets';
 import Loader from '../components/Loader';
 import { useAppContext } from '../context/AppContext';
 import toast from 'react-hot-toast';
@@ -11,41 +11,43 @@ import Carousel from '../components/Carousel';
 const CarDetails = () => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
-  const { cars, axios, pickupDate, setPickupDate, returnDate, setReturnDate, currency } = useAppContext();
+  const { cars, axios, pickupDate, setPickupDate, returnDate, setReturnDate, currency, token, setToken, setUser } = useAppContext();
   const navigate = useNavigate();
 
   const [car, setCar] = useState(null);
   const [location, setLocation] = useState('');
   const [phone, setPhone] = useState('');
-  const [mode, setMode] = useState(searchParams.get('mode') || 'rent'); // 'rent' or 'buy'
+  const [mode, setMode] = useState('rent'); // Always rent mode
   // Carousel state is now managed by the Carousel component
 
-  // Buy form state
+  // Rent form state
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [idNumber, setIdNumber] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState('');
+  const [driverLicense, setDriverLicense] = useState('');
+  const [rentalDuration, setRentalDuration] = useState('1');
+  const [insuranceOption, setInsuranceOption] = useState('basic');
+  const [warrantyOption, setWarrantyOption] = useState('1year');
+  const [financingOption, setFinancingOption] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('bank_transfer');
+  const [billingAddress, setBillingAddress] = useState('');
   const [deliveryAddress, setDeliveryAddress] = useState('');
   const [city, setCity] = useState('');
   const [postalCode, setPostalCode] = useState('');
   const [country, setCountry] = useState('');
   const [alternatePhone, setAlternatePhone] = useState('');
   const [preferredDeliveryDate, setPreferredDeliveryDate] = useState('');
-  const [insuranceOption, setInsuranceOption] = useState('basic');
-  const [warrantyOption, setWarrantyOption] = useState('1year');
-  const [financingOption, setFinancingOption] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState('bank_transfer');
-  const [billingAddress, setBillingAddress] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [savedFormData, setSavedFormData] = useState(null);
 
   // Find car from context or fallback to dummy data
-  
+
   useEffect(() => {
     let foundCar = cars.find((c) => c._id === id);
-    if (!foundCar) {
-      foundCar = dummyCarData.find((c) => c._id === id);
-    }
     setCar(foundCar);
   }, [cars, id]);
 
@@ -53,17 +55,47 @@ const CarDetails = () => {
 
   const handleRentSubmit = async (e) => {
     e.preventDefault();
+
+    // Check if user is authenticated
+    if (!token) {
+      // Save form data and show auth modal
+      setSavedFormData({
+        fullName,
+        email,
+        phone,
+        location,
+        rentalDuration
+      });
+      setShowAuthModal(true);
+      return;
+    }
+
+    // Validate required fields
+    if (!phone.trim()) {
+      toast.error('Phone number is required');
+      return;
+    }
+
+    if (!fullName.trim()) {
+      toast.error('Full name is required');
+      return;
+    }
+
     try {
+      // Calculate pickup and return dates
+      const pickupDate = new Date();
+      const returnDate = new Date();
+      returnDate.setDate(pickupDate.getDate() + parseInt(rentalDuration));
+
       const { data } = await axios.post('/api/bookings/create', {
         car: id,
-        pickupDate,
-        returnDate,
-        location,
-        phoneNumber: phone,
+        pickupDate: pickupDate.toISOString(),
+        returnDate: returnDate.toISOString(),
       });
 
       if (data.success) {
         toast.success(data.message || 'Booking created successfully!');
+        setShowBookingModal(false);
         navigate('/my-bookings');
       } else {
         toast.error(data.message || 'Failed to create booking');
@@ -73,48 +105,11 @@ const CarDetails = () => {
     }
   };
 
-  const handleBuySubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const { data } = await axios.post('/api/purchases/create', {
-        car: id,
-        fullName,
-        email,
-        idNumber,
-        dateOfBirth,
-        deliveryAddress,
-        city,
-        postalCode,
-        country,
-        location,
-        phoneNumber: phone,
-        alternatePhone,
-        preferredDeliveryDate,
-        insuranceOption,
-        warrantyOption,
-        financingOption,
-        paymentMethod,
-        billingAddress,
-        termsAccepted,
-        privacyAccepted,
-      });
-
-      if (data.success) {
-        toast.success(data.message || 'Purchase created successfully!');
-        navigate('/my-bookings'); // Or a purchases page
-      } else {
-        toast.error(data.message || 'Failed to create purchase');
-      }
-    } catch (error) {
-      toast.error(error.response?.data?.message || error.message || 'Network error');
-    }
-  };
 
   if (!car) return <Loader />;
 
   return (
     <div className="px-6 md:px-16 lg:px-24 xl:px-32 mt-16">
-      {/* Back Button */}
       <motion.button
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
@@ -128,13 +123,13 @@ const CarDetails = () => {
         Back to all cars
       </motion.button>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
-        {/* Left: Car Image & Details */}
+      <div className="w-full">
+        {/* Car Image & Details */}
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="lg:col-span-2"
+          className="w-full"
         >
           {/* Car Image Carousel */}
           <motion.div
@@ -143,8 +138,8 @@ const CarDetails = () => {
             transition={{ duration: 0.5 }}
             className="mb-8"
           >
-            <Carousel 
-              images={car.images && car.images.length > 0 ? car.images : [assets.car_image1, assets.car_image2, assets.car_image3, assets.car_image4]}
+            <Carousel
+              images={[car.image, ...(car.subImages || [])]}
               autoPlay={true}
               interval={5000}
             />
@@ -178,7 +173,13 @@ const CarDetails = () => {
                 { icon: assets.users_icon, text: `${car.seating_capacity} Seats` },
                 { icon: assets.fuel_icon, text: car.fuel_type },
                 { icon: assets.car_icon, text: car.transmission },
-                { icon: assets.location_icon, text: car.location },
+                { icon: assets.location_icon, text: Array.isArray(car.location) ? (
+  car.location.includes('all-cities') ? (
+    'All Cities'
+  ) : (
+    car.location.length > 3 ? `${car.location.slice(0, 3).join(', ')} +${car.location.length - 3}` : car.location.join(', ')
+  )
+) : car.location },
               ].map(({ icon, text }, index) => (
                 <motion.div
                   key={text}
@@ -225,459 +226,310 @@ const CarDetails = () => {
           </motion.div>
         </motion.div>
 
-        {/* Right: Booking Form */}
-        <motion.form
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-          onSubmit={mode === 'rent' ? handleRentSubmit : handleBuySubmit}
-          className="lg:sticky lg:top-24 h-max bg-white shadow-2xl rounded-2xl p-8 space-y-6 border border-gray-100"
+        {/* Book Now CTA Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
+          className="bg-gradient-to-r from-primary to-primary-dull rounded-3xl p-12 text-center text-white my-12 shadow-2xl"
         >
-          {/* Mode Selection */}
-          <div className="flex bg-gray-100 rounded-lg p-1">
-            <button
-              type="button"
-              onClick={() => setMode('rent')}
-              className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${
-                mode === 'rent' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500'
-              }`}
-            >
-              Rent
-            </button>
-            <button
-              type="button"
-              onClick={() => setMode('buy')}
-              className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${
-                mode === 'buy' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500'
-              }`}
-            >
-              Buy
-            </button>
-          </div>
-
-          <motion.div
+          <motion.h2
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="flex items-end gap-2"
+            transition={{ duration: 0.6, delay: 0.8 }}
+            className="text-4xl font-bold mb-4"
           >
-            <span className="text-4xl font-bold text-gray-900">
-              {currency}{mode === 'rent' ? car.pricePerDay : car.purchasePrice}
-            </span>
-            <span className="text-gray-500">{mode === 'rent' ? '/ day' : ''}</span>
-          </motion.div>
+            Ready to Drive Your Dream Car?
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 1 }}
+            className="text-xl mb-8 opacity-90"
+          >
+            Book now and experience luxury and performance on the road
+          </motion.p>
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 1.2 }}
+            whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(0,0,0,0.3)" }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowBookingModal(true)}
+            className="bg-white text-primary font-bold py-4 px-12 rounded-full text-lg transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
+          >
+            Book Now - {currency}{car.pricePerDay.toLocaleString()}/day
+          </motion.button>
+        </motion.div>
 
-          <hr className="border-gray-200 my-6" />
+      {/* Booking Modal */}
+        {showBookingModal && (
+          <div className="fixed inset-0 bg-transparent flex items-center justify-center p-4 z-50">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            >
+              <div className="p-8">
+                {/* Modal Header */}
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-bold text-gray-800">Complete Your Booking</h2>
+                  <button
+                    onClick={() => setShowBookingModal(false)}
+                    className="text-gray-400 hover:text-gray-600 text-2xl font-bold"
+                  >
+                    ×
+                  </button>
+                </div>
 
-          <div className="space-y-5">
-            {mode === 'rent' && (
-              <>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.1 }}
-                  className="flex flex-col gap-2"
-                >
-                  <label htmlFor="pickup-date" className="font-medium text-gray-700">Pickup Date</label>
-                  <input
-                    value={pickupDate}
-                    onChange={(e) => setPickupDate(e.target.value)}
-                    type="date"
-                    required
-                    min={new Date().toISOString().split('T')[0]}
-                    className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                  />
-                </motion.div>
+                {/* Booking Form */}
+                <form onSubmit={handleRentSubmit} className="space-y-6">
+                  {/* Contact Information */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Contact Information</h3>
 
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                  className="flex flex-col gap-2"
-                >
-                  <label htmlFor="return-date" className="font-medium text-gray-700">Return Date</label>
-                  <input
-                    value={returnDate}
-                    onChange={(e) => setReturnDate(e.target.value)}
-                    type="date"
-                    required
-                    className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                  />
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.3 }}
-                  className="flex flex-col gap-2"
-                >
-                  <label htmlFor="location" className="font-medium text-gray-700">Pickup Location</label>
-                  <input
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    type="text"
-                    placeholder="e.g. Gicumbi, Rwanda"
-                    required
-                    className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                  />
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.4 }}
-                  className="flex flex-col gap-2"
-                >
-                  <label htmlFor="phone" className="font-medium text-gray-700">Phone Number</label>
-                  <input
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    type="tel"
-                    placeholder="+250 7XX XXX XXX"
-                    required
-                    className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                  />
-                </motion.div>
-              </>
-            )}
-
-            {mode === 'buy' && (
-              <>
-                {/* Personal Information */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.1 }}
-                  className="space-y-4"
-                >
-                  <h3 className="font-semibold text-gray-800 border-b pb-2">Personal Information</h3>
-                  
-                  <div className="grid grid-cols-1 gap-4">
-                    <div className="flex flex-col gap-2">
-                      <label className="font-medium text-gray-700">Full Name *</label>
-                      <input
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                        type="text"
-                        placeholder="Enter your full name"
-                        required
-                        className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                      />
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                      <label className="font-medium text-gray-700">Email Address *</label>
-                      <input
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        type="email"
-                        placeholder="your.email@example.com"
-                        required
-                        className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="flex flex-col gap-2">
-                        <label className="font-medium text-gray-700">ID/Passport Number *</label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
                         <input
-                          value={idNumber}
-                          onChange={(e) => setIdNumber(e.target.value)}
                           type="text"
-                          placeholder="123456789"
+                          value={fullName}
+                          onChange={(e) => setFullName(e.target.value)}
                           required
-                          className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                         />
                       </div>
-
-                      <div className="flex flex-col gap-2">
-                        <label className="font-medium text-gray-700">Date of Birth *</label>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
                         <input
-                          value={dateOfBirth}
-                          onChange={(e) => setDateOfBirth(e.target.value)}
-                          type="date"
+                          type="email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
                           required
-                          max={new Date().toISOString().split('T')[0]}
-                          className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                        <input
+                          type="tel"
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          placeholder="+250 7XX XXX XXX"
+                          required
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Pickup Location</label>
+                        <input
+                          type="text"
+                          value={location}
+                          onChange={(e) => setLocation(e.target.value)}
+                          placeholder="e.g. Kigali, Rwanda"
+                          required
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                         />
                       </div>
                     </div>
                   </div>
-                </motion.div>
 
-                {/* Delivery Address */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                  className="space-y-4"
-                >
-                  <h3 className="font-semibold text-gray-800 border-b pb-2">Delivery Address</h3>
-                  
-                  <div className="flex flex-col gap-2">
-                    <label className="font-medium text-gray-700">Delivery Address *</label>
-                    <textarea
-                      value={deliveryAddress}
-                      onChange={(e) => setDeliveryAddress(e.target.value)}
-                      placeholder="Enter your complete delivery address"
-                      required
-                      rows={3}
-                      className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                    />
-                  </div>
+                  {/* Rental Details */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Rental Details</h3>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="flex flex-col gap-2">
-                      <label className="font-medium text-gray-700">City *</label>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Rental Duration (days)</label>
                       <input
-                        value={city}
-                        onChange={(e) => setCity(e.target.value)}
-                        type="text"
-                        placeholder="City"
+                        type="number"
+                        value={rentalDuration}
+                        onChange={(e) => setRentalDuration(e.target.value)}
+                        min="1"
+                        placeholder="Enter number of days"
                         required
-                        className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                      />
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                      <label className="font-medium text-gray-700">Postal Code *</label>
-                      <input
-                        value={postalCode}
-                        onChange={(e) => setPostalCode(e.target.value)}
-                        type="text"
-                        placeholder="12345"
-                        required
-                        className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-sans text-base [appearance:textfield] [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none"
                       />
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-2">
-                    <label className="font-medium text-gray-700">Country *</label>
-                    <select
-                      value={country}
-                      onChange={(e) => setCountry(e.target.value)}
-                      required
-                      className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                    >
-                      <option value="">Select Country</option>
-                      <option value="Rwanda">Rwanda</option>
-                      <option value="Kenya">Kenya</option>
-                      <option value="Tanzania">Tanzania</option>
-                      <option value="Uganda">Uganda</option>
-                      <option value="Burundi">Burundi</option>
-                      <option value="Democratic Republic of Congo">Democratic Republic of Congo</option>
-                    </select>
-                  </div>
-                </motion.div>
-
-                {/* Contact Information */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.3 }}
-                  className="space-y-4"
-                >
-                  <h3 className="font-semibold text-gray-800 border-b pb-2">Contact Information</h3>
-                  
-                  <div className="grid grid-cols-1 gap-4">
-                    <div className="flex flex-col gap-2">
-                      <label className="font-medium text-gray-700">Primary Phone Number *</label>
-                      <input
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        type="tel"
-                        placeholder="+250 7XX XXX XXX"
-                        required
-                        className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                      />
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                      <label className="font-medium text-gray-700">Alternate Phone Number</label>
-                      <input
-                        value={alternatePhone}
-                        onChange={(e) => setAlternatePhone(e.target.value)}
-                        type="tel"
-                        placeholder="+250 7XX XXX XXX"
-                        className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                      />
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                      <label className="font-medium text-gray-700">Preferred Delivery Location *</label>
-                      <input
-                        value={location}
-                        onChange={(e) => setLocation(e.target.value)}
-                        type="text"
-                        placeholder="e.g. Kigali, Rwanda"
-                        required
-                        className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                      />
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* Purchase Options */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.4 }}
-                  className="space-y-4"
-                >
-                  <h3 className="font-semibold text-gray-800 border-b pb-2">Purchase Options</h3>
-                  
-                  <div className="flex flex-col gap-2">
-                    <label className="font-medium text-gray-700">Preferred Delivery Date *</label>
-                    <input
-                      value={preferredDeliveryDate}
-                      onChange={(e) => setPreferredDeliveryDate(e.target.value)}
-                      type="date"
-                      required
-                      min={new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}
-                      className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 gap-4">
-                    <div className="flex flex-col gap-2">
-                      <label className="font-medium text-gray-700">Insurance Option</label>
-                      <select
-                        value={insuranceOption}
-                        onChange={(e) => setInsuranceOption(e.target.value)}
-                        className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                      >
-                        <option value="basic">Basic Insurance (+$500)</option>
-                        <option value="comprehensive">Comprehensive Insurance (+$1,200)</option>
-                        <option value="none">No Insurance</option>
-                      </select>
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                      <label className="font-medium text-gray-700">Warranty Option</label>
-                      <select
-                        value={warrantyOption}
-                        onChange={(e) => setWarrantyOption(e.target.value)}
-                        className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                      >
-                        <option value="1year">1 Year Warranty (+$300)</option>
-                        <option value="2years">2 Years Warranty (+$500)</option>
-                        <option value="3years">3 Years Warranty (+$700)</option>
-                        <option value="none">No Extended Warranty</option>
-                      </select>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="checkbox"
-                        id="financing"
-                        checked={financingOption}
-                        onChange={(e) => setFinancingOption(e.target.checked)}
-                        className="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded"
-                      />
-                      <label htmlFor="financing" className="text-gray-700">Apply for financing options</label>
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* Payment Information */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.5 }}
-                  className="space-y-4"
-                >
-                  <h3 className="font-semibold text-gray-800 border-b pb-2">Payment Information</h3>
-                  
-                  <div className="flex flex-col gap-2">
-                    <label className="font-medium text-gray-700">Payment Method</label>
-                    <select
-                      value={paymentMethod}
-                      onChange={(e) => setPaymentMethod(e.target.value)}
-                      className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                    >
-                      <option value="bank_transfer">Bank Transfer</option>
-                      <option value="credit_card">Credit Card</option>
-                      <option value="cash">Cash on Delivery</option>
-                      <option value="check">Check</option>
-                    </select>
-                  </div>
-
-                  {(paymentMethod === 'credit_card' || paymentMethod === 'bank_transfer') && (
-                    <div className="flex flex-col gap-2">
-                      <label className="font-medium text-gray-700">Billing Address (if different from delivery)</label>
-                      <textarea
-                        value={billingAddress}
-                        onChange={(e) => setBillingAddress(e.target.value)}
-                        placeholder="Enter billing address if different from delivery address"
-                        rows={2}
-                        className="border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
-                      />
-                    </div>
-                  )}
-                </motion.div>
-
-                {/* Legal Agreements */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.6 }}
-                  className="space-y-4"
-                >
-                  <h3 className="font-semibold text-gray-800 border-b pb-2">Legal Agreements</h3>
-                  
+                  {/* Terms and Conditions */}
                   <div className="space-y-3">
-                    <div className="flex items-start gap-3">
+                    <label className="flex items-start gap-3">
                       <input
                         type="checkbox"
-                        id="terms"
                         checked={termsAccepted}
                         onChange={(e) => setTermsAccepted(e.target.checked)}
                         required
-                        className="w-4 h-4 mt-1 text-primary focus:ring-primary border-gray-300 rounded"
+                        className="mt-1 w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
                       />
-                      <label htmlFor="terms" className="text-sm text-gray-700">
-                        I agree to the <a href="#" className="text-primary hover:underline">Terms and Conditions</a> *
-                      </label>
-                    </div>
-
-                    <div className="flex items-start gap-3">
+                      <span className="text-sm text-gray-600">I agree to the Terms and Conditions</span>
+                    </label>
+                    <label className="flex items-start gap-3">
                       <input
                         type="checkbox"
-                        id="privacy"
                         checked={privacyAccepted}
                         onChange={(e) => setPrivacyAccepted(e.target.checked)}
                         required
-                        className="w-4 h-4 mt-1 text-primary focus:ring-primary border-gray-300 rounded"
+                        className="mt-1 w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
                       />
-                      <label htmlFor="privacy" className="text-sm text-gray-700">
-                        I agree to the <a href="#" className="text-primary hover:underline">Privacy Policy</a> *
-                      </label>
-                    </div>
+                      <span className="text-sm text-gray-600">I accept the Privacy Policy</span>
+                    </label>
                   </div>
-                </motion.div>
-              </>
-            )}
+
+                  {/* Submit Button */}
+                  <div className="flex gap-4">
+                    <button
+                      type="button"
+                      onClick={() => setShowBookingModal(false)}
+                      className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="flex-1 px-6 py-3 bg-gradient-to-r from-primary to-primary-dull text-white font-semibold rounded-lg hover:from-primary-dull hover:to-primary transition-all"
+                    >
+                      Confirm Booking
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </motion.div>
           </div>
+        )}
 
-          <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            type="submit"
-            className="w-full bg-primary hover:bg-primary-dull text-white font-semibold py-4 rounded-xl transition-all duration-300 mt-4"
-          >
-            {mode === 'rent' ? 'Book Now' : 'Complete Purchase'}
-          </motion.button>
+        {/* Authentication Modal */}
+        {showAuthModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-white rounded-3xl shadow-2xl max-w-md w-full"
+            >
+              <div className="p-8">
+                {/* Modal Header */}
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-bold text-gray-800">Create Account to Continue</h2>
+                  <button
+                    onClick={() => setShowAuthModal(false)}
+                    className="text-gray-400 hover:text-gray-600 text-2xl font-bold"
+                  >
+                    ×
+                  </button>
+                </div>
 
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-            className="text-center text-sm text-gray-500 mt-2"
-          >
-            {mode === 'rent' ? 'No credit card required to reserve' : 'All information is securely encrypted'}
-          </motion.p>
-        </motion.form>
+                <p className="text-gray-600 mb-6">
+                  Join us to complete your booking for the {car?.name || 'car'}.
+                </p>
+
+                {/* Registration Form */}
+                <form onSubmit={async (e) => {
+                  e.preventDefault();
+                  try {
+                    const formData = new FormData(e.target);
+                    const payload = {
+                      name: formData.get('name'),
+                      email: formData.get('email'),
+                      password: formData.get('password'),
+                      phone: savedFormData?.phone || formData.get('phone'),
+                      location: savedFormData?.location || ''
+                    };
+
+                    const { data } = await axios.post('/api/user/register', payload);
+
+                    if (data.success) {
+                      setToken(data.token);
+                      localStorage.setItem('token', data.token);
+                      setUser({ name: payload.name, email: payload.email });
+
+                      toast.success('Account created successfully!');
+                      setShowAuthModal(false);
+
+                      // Restore saved form data
+                      if (savedFormData) {
+                        setFullName(savedFormData.fullName);
+                        setEmail(savedFormData.email);
+                        setPhone(savedFormData.phone);
+                        setLocation(savedFormData.location);
+                        setRentalDuration(savedFormData.rentalDuration);
+                      }
+
+                      // Show booking modal again
+                      setShowBookingModal(true);
+                    } else {
+                      toast.error(data.message || 'Registration failed');
+                    }
+                  } catch (error) {
+                    toast.error(error.response?.data?.message || error.message || 'Registration failed');
+                  }
+                }} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                    <input
+                      type="text"
+                      name="name"
+                      defaultValue={savedFormData?.fullName || ''}
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <input
+                      type="email"
+                      name="email"
+                      defaultValue={savedFormData?.email || ''}
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <input
+                      type="password"
+                      name="password"
+                      required
+                      minLength="6"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      defaultValue={savedFormData?.phone || ''}
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    />
+                  </div>
+
+                  <div className="flex gap-4 pt-4">
+                    <button
+                      type="button"
+                      onClick={() => setShowAuthModal(false)}
+                      className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="flex-1 px-6 py-3 bg-gradient-to-r from-primary to-primary-dull text-white font-semibold rounded-lg hover:from-primary-dull hover:to-primary transition-all"
+                    >
+                      Create Account
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </motion.div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -2,10 +2,31 @@ import { createContext, useContext, useEffect, useState } from "react";
 import axios from 'axios'
 import {toast} from 'react-hot-toast'
 import { useNavigate } from "react-router-dom";
-import { dummyCarData } from '../assets/assets';
+import LoadingScreen from "../components/LoadingScreen";
 
 axios.defaults.baseURL = import.meta.env.VITE_BASE_URL
 console.log('🌐 Axios baseURL set to:', axios.defaults.baseURL)
+
+// Add a response interceptor
+axios.interceptors.response.use(
+  function (response) {
+    return response;
+  },
+  function (error) {
+    let message = 'Something went wrong. Please try again.';
+    if (error.response) {
+        // Server responded with non-2xx code
+        message = error.response.data?.message || 'Server error occurred.';
+    } else if (error.request) {
+        // No response received
+        message = 'Network connection problem. Please check your internet.';
+    } else {
+        message = error.message;
+    }
+    error.message = message; // Update the error object's message
+    return Promise.reject(error);
+  }
+);
 
 export const AppContext = createContext();
 
@@ -20,8 +41,8 @@ export const AppProvider = ({ children })=>{
     const [showLogin, setShowLogin] = useState(false)
     const [pickupDate, setPickupDate] = useState('')
     const [returnDate, setReturnDate] = useState('')
-
     const [cars, setCars] = useState([])
+    const [appLoading, setAppLoading] = useState(false)
 
     // Function to check if user is logged in
     const fetchUser = async ()=>{
@@ -34,27 +55,27 @@ export const AppProvider = ({ children })=>{
             navigate('/')
            }
         } catch (error) {
-            toast.error(error.message)
+            // Quietly fail or handle specific errors, avoid generic toast on load
+            console.error(error.message)
         }
     }
-    // Function to fetch all cars from the server
 
-    // const fetchCars = async () =>{
-    //     try {
-    //         console.log('🚗 Fetching cars from:', axios.defaults.baseURL + '/api/user/cars')
-    //         const {data} = await axios.get('/api/user/cars')
-    //         console.log('✅ Cars data received:', data)
-    //         data.success ? setCars(data.cars) : toast.error(data.message)
-    //     } catch (error) {
-    //         console.error('❌ Error fetching cars:', error)
-    //         toast.error(error.message)
-    //     }
-    // }  fetchCars();
-
-    const fetchCars = async () => {
-  console.log('Using local dummy car data');
-  setCars(dummyCarData); // Use local data directly
-};
+    const fetchCars = async () =>{
+        try {
+            console.log('🚗 Fetching cars from:', axios.defaults.baseURL + '/api/user/cars')
+            const {data} = await axios.get('/api/user/cars')
+            console.log('✅ Cars data received:', data)
+            if (data.success) {
+                setCars(data.cars)
+            } else {
+                console.log('❌ Backend failed')
+                setCars([])
+            }
+        } catch (error) {
+            console.error('❌ Error fetching cars:', error.message)
+            setCars([])
+        }
+    }
 
     // Function to log out the user
     const logout = ()=>{
@@ -63,35 +84,44 @@ export const AppProvider = ({ children })=>{
         setUser(null)
         setIsOwner(false)
         axios.defaults.headers.common['Authorization'] = ''
+        navigate('/')
         toast.success('You have been logged out')
     }
 
-
-    // useEffect to retrieve the token from localStorage
+    // Initialize App
     useEffect(()=>{
-        const token = localStorage.getItem('token')
-        setToken(token)
-        console.log('🔄 Token from localStorage:', token)
-        fetchCars()
+        const initApp = async () => {
+            const storedToken = localStorage.getItem('token');
+            setToken(storedToken);
+
+            if (storedToken) {
+                axios.defaults.headers.common['Authorization'] = storedToken;
+                fetchUser();
+            }
+
+            fetchCars();
+        };
+        initApp();
     },[])
 
-    // useEffect to fetch user data when token is available
+    // Separate useEffect for when token changes later (e.g. login)
     useEffect(()=>{
-        if(token){
+        if(token && !appLoading){ // Don't double fetch on init
             axios.defaults.headers.common['Authorization'] = `${token}`
-            fetchUser()
+             // If we just logged in (appLoading is false), fetch user
+             if(!user) fetchUser();
         }
     },[token])
 
     const value = {
         navigate, currency, axios, user, setUser,
         token, setToken, isOwner, setIsOwner, fetchUser, showLogin, setShowLogin, logout, fetchCars, cars, setCars,
-        pickupDate, setPickupDate, returnDate, setReturnDate
+        pickupDate, setPickupDate, returnDate, setReturnDate, appLoading, setAppLoading
     }
 
     return (
     <AppContext.Provider value={value}>
-        { children }
+        { appLoading ? <LoadingScreen /> : children }
     </AppContext.Provider>
     )
 }

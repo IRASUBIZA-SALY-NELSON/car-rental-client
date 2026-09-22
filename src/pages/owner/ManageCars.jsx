@@ -3,14 +3,17 @@ import { assets} from '../../assets/assets'
 import Title from '../../components/owner/Title'
 import { useAppContext } from '../../context/AppContext'
 import toast from 'react-hot-toast'
+import { confirmAction } from '../../utils/confirmAction'
 
 const ManageCars = () => {
 
-  const {isOwner, axios, currency} = useAppContext()
+  const {isOwner, axios, currency, navigate, user} = useAppContext()
 
   const [cars, setCars] = useState([])
+  const [loading, setLoading] = useState(true)
 
   const fetchOwnerCars = async ()=>{
+    setLoading(true)
     try {
       const {data} = await axios.get('/api/owner/cars')
       if(data.success){
@@ -20,11 +23,19 @@ const ManageCars = () => {
       }
     } catch (error) {
       toast.error(error.message)
+    } finally {
+      setLoading(false)
     }
   }
 
-  const toggleAvailability = async (carId)=>{
+  const toggleAvailability = async (carId, carOwnerId)=>{
     try {
+      // Only allow owner to modify their own cars
+      if (carOwnerId !== user?._id) {
+        toast.error('You can only modify your own cars')
+        return
+      }
+
       const {data} = await axios.post('/api/owner/toggle-car', {carId})
       if(data.success){
         toast.success(data.message)
@@ -37,78 +48,182 @@ const ManageCars = () => {
     }
   }
 
-  const deleteCar = async (carId)=>{
-    try {
-
-      const confirm = window.confirm('Are you sure you want to delete this car?')
-
-      if(!confirm) return null
-
-      const {data} = await axios.post('/api/owner/delete-car', {carId})
-      if(data.success){
-        toast.success(data.message)
-        fetchOwnerCars()
-      }else{
-        toast.error(data.message)
-      }
-    } catch (error) {
-      toast.error(error.message)
+  const deleteCar = (carId, carOwnerId)=>{
+    // Only allow owner to delete their own cars
+    if (carOwnerId !== user?._id) {
+      toast.error('You can only delete your own cars')
+      return
     }
+
+    confirmAction('Are you sure you want to delete this car? This action cannot be undone.', async () => {
+      try {
+        const {data} = await axios.post('/api/owner/delete-car', {carId})
+        if(data.success){
+          toast.success(data.message)
+          fetchOwnerCars()
+        }else{
+          toast.error(data.message)
+        }
+      } catch (error) {
+        toast.error(error.message)
+      }
+    })
   }
 
   useEffect(()=>{
-    isOwner && fetchOwnerCars()
-  },[isOwner])
+    if(!isOwner){
+      navigate('/')
+      return
+    }
+    if(isOwner){
+      fetchOwnerCars()
+    }
+  },[isOwner, navigate])
 
   return (
     <div className='px-4 pt-10 md:px-10 w-full'>
-      
+
       <Title title="Manage Cars" subTitle="View all listed cars, update their details, or remove them from the booking platform."/>
 
-      <div className='max-w-3xl w-full rounded-md overflow-hidden border border-borderColor mt-6'>
+      <div className='w-full rounded-lg shadow-sm border border-borderColor mt-6 bg-white overflow-x-auto'>
 
-        <table className='w-full border-collapse text-left text-sm text-gray-600'>
-          <thead className='text-gray-500'>
+        <table className='w-full min-w-[600px] border-collapse text-left text-sm text-gray-700'>
+          <thead className='bg-gray-50 text-gray-600 uppercase text-xs font-semibold'>
             <tr>
-              <th className="p-3 font-medium">Car</th>
-              <th className="p-3 font-medium max-md:hidden">Category</th>
-              <th className="p-3 font-medium">Rent Price</th>
-              <th className="p-3 font-medium max-md:hidden">Buy Price</th>
-              <th className="p-3 font-medium max-md:hidden">Status</th>
-              <th className="p-3 font-medium">Actions</th>
+              <th className="px-6 py-4">Car Details</th>
+              <th className="px-6 py-4 max-md:hidden">Category</th>
+              <th className="px-6 py-4">Rent Price</th>
+              <th className="px-6 py-4 max-md:hidden">Buy Price</th>
+              <th className="px-6 py-4 max-md:hidden">Status</th>
+              <th className="px-6 py-4">Actions</th>
             </tr>
           </thead>
-          <tbody>
-            {cars.map((car, index)=>(
-              <tr key={index} className='border-t border-borderColor'>
+          <tbody className='divide-y divide-gray-100'>
+            {loading ? (
+              [...Array(5)].map((_, i) => (
+                <tr key={i} className='animate-pulse'>
+                  <td className='p-3 flex items-center gap-3'>
+                    <div className="h-12 w-12 bg-gray-100 rounded-md"></div>
+                    <div className='max-md:hidden space-y-2'>
+                        <div className="h-4 w-32 bg-gray-100 rounded"></div>
+                        <div className="h-3 w-20 bg-gray-100 rounded"></div>
+                    </div>
+                  </td>
+                  <td className='px-6 py-4 max-md:hidden'>
+                    <div className="h-6 w-20 bg-gray-100 rounded-full"></div>
+                  </td>
+                  <td className='px-6 py-4'>
+                    <div className="h-5 w-16 bg-gray-100 rounded"></div>
+                  </td>
+                  <td className='px-6 py-4 max-md:hidden'>
+                     <div className="h-5 w-16 bg-gray-100 rounded"></div>
+                  </td>
+                  <td className='px-6 py-4 max-md:hidden'>
+                    <div className="h-6 w-24 bg-gray-100 rounded-full"></div>
+                  </td>
+                  <td className='px-6 py-4'>
+                     <div className="flex items-center gap-4">
+                      <div className="h-10 w-10 bg-gray-100 rounded-xl"></div>
+                      <div className="h-10 w-10 bg-gray-100 rounded-xl"></div>
+                     </div>
+                  </td>
+                </tr>
+              ))
+            ) : cars.length === 0 ? (
+              <tr>
+                <td colSpan="6" className="px-6 py-20 text-center">
+                  <div className="flex flex-col items-center justify-center space-y-3">
+                    <div className="p-4 bg-gray-50 rounded-full">
+                      <img src={assets.cautionIconColored} alt="" className="w-10 h-10 opacity-40" />
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-lg font-semibold text-gray-800">No cars yet in the system</p>
+                      <p className="text-sm text-gray-500 max-w-sm mx-auto">
+                        It looks like there are no vehicles listed at the moment.
+                        Start by adding a new car to your fleet.
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => navigate('/owner/add-car')}
+                      className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                    >
+                      Add Your First Car
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              cars.map((car, index)=>(
+              <tr key={index} className='hover:bg-gray-50 transition-colors duration-150'>
 
                 <td className='p-3 flex items-center gap-3'>
-                  <img src={car.image} alt="" className="h-12 w-12 aspect-square rounded-md object-cover"/>
+                  <img src={car.image || car.images?.[0]} alt="" className="h-12 w-12 aspect-square rounded-md object-cover"/>
                   <div className='max-md:hidden'>
                     <p className='font-medium'>{car.brand} {car.model}</p>
                     <p className='text-xs text-gray-500'>{car.seating_capacity} • {car.transmission}</p>
                   </div>
                 </td>
 
-                <td className='p-3 max-md:hidden'>{car.category}</td>
-                <td className='p-3'>{currency}{car.pricePerDay}/day</td>
-                <td className='p-3 max-md:hidden'>{currency}{car.purchasePrice}</td>
+                <td className='px-6 py-4 max-md:hidden'>
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
+                    {car.category}
+                  </span>
+                </td>
 
-                <td className='p-3 max-md:hidden'>
-                  <span className={`px-3 py-1 rounded-full text-xs ${car.isAvaliable ? 'bg-green-100 text-green-500' : 'bg-red-100 text-red-500'}`}>
+                <td className='px-6 py-4 font-medium text-gray-900'>
+                  {currency}{car.pricePerDay}<span className="text-gray-500 font-normal text-xs">/day</span>
+                </td>
+
+                <td className='px-6 py-4 max-md:hidden text-gray-600'>
+                   {car.purchasePrice ? `${currency}${car.purchasePrice}` : '-'}
+                </td>
+
+                <td className='px-6 py-4 max-md:hidden'>
+                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${car.isAvaliable ? 'bg-green-50 text-green-700 border border-green-100' : 'bg-red-50 text-red-700 border border-red-100'}`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${car.isAvaliable ? 'bg-green-500' : 'bg-red-500'}`}></span>
                     {car.isAvaliable ? "Available" : "Unavailable" }
                   </span>
                 </td>
 
-                <td className='flex items-center p-3'>
+                <td className='px-6 py-4'>
+                   <div className="flex items-center gap-4">
+                    <button
+                      onClick={()=> toggleAvailability(car._id, car.owner)}
+                      className={`p-3.5 rounded-xl border transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 ${
+                        car.isAvaliable
+                          ? 'bg-indigo-50 border-indigo-100 hover:bg-indigo-100 hover:border-indigo-200'
+                          : 'bg-gray-50 border-gray-200 hover:bg-gray-100 hover:border-gray-300'
+                      }`}
+                      title={car.isAvaliable ? "Mark Unavailable" : "Mark Available"}
+                    >
+                      <img
+                        src={car.isAvaliable ? assets.eye_close_icon : assets.eye_icon}
+                        alt=""
+                        className='w-6 h-6 min-w-[24px] object-contain'
+                      />
+                    </button>
 
-                  <img onClick={()=> toggleAvailability(car._id)} src={car.isAvaliable ? assets.eye_close_icon : assets.eye_icon} alt="" className='cursor-pointer'/>
+                    <button
+                      onClick={()=> navigate(`/owner/edit-car/${car._id}`)}
+                      className="p-3.5 rounded-xl border border-blue-100 bg-blue-50 transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 hover:bg-blue-100 hover:border-blue-200"
+                      title="Edit Car"
+                    >
+                      <img src={assets.edit_icon} alt="" className='w-6 h-6 min-w-[24px] object-contain'/>
+                    </button>
 
-                  <img onClick={()=> deleteCar(car._id)} src={assets.delete_icon} alt="" className='cursor-pointer'/>
+                    <button
+                      onClick={()=> deleteCar(car._id, car.owner)}
+                      className="p-3.5 rounded-xl border border-red-100 bg-red-50 transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 hover:bg-red-100 hover:border-red-200"
+                      title="Delete Car"
+                    >
+                      <img src={assets.delete_icon} alt="" className='w-6 h-6 min-w-[24px] object-contain'/>
+                    </button>
+                   </div>
                 </td>
 
               </tr>
-            ))}
+            ))
+            )}
           </tbody>
         </table>
 

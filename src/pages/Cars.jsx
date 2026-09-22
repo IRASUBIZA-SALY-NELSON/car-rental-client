@@ -5,7 +5,7 @@ import CarCardNew from '../components/CarCardNew'
 import { useSearchParams } from 'react-router-dom'
 import { useAppContext } from '../context/AppContext'
 import toast from 'react-hot-toast'
-// import { motion } from 'motion/react'
+import { motion } from 'motion/react'
 
 const Cars = () => {
 
@@ -23,17 +23,25 @@ const Cars = () => {
   const [filteredCars, setFilteredCars] = useState([])
 
   const applyFilter = async ()=>{
-     
+
     if(input === ''){
       setFilteredCars(cars)
       return null
     }
 
     const filtered = cars.slice().filter((car)=>{
-      return car.brand.toLowerCase().includes(input.toLowerCase())
-      || car.model.toLowerCase().includes(input.toLowerCase())  
-      || car.category.toLowerCase().includes(input.toLowerCase())  
-      || car.transmission.toLowerCase().includes(input.toLowerCase())
+      // Handle location array for multi-city support
+      const locationMatch = Array.isArray(car.location)
+        ? car.location.includes('all-cities') || car.location.some(loc =>
+            loc.toLowerCase().includes(input.toLowerCase())
+          )
+        : car.location.toLowerCase().includes(input.toLowerCase());
+
+      return locationMatch ||
+        car.brand.toLowerCase().includes(input.toLowerCase()) ||
+        car.model.toLowerCase().includes(input.toLowerCase()) ||
+        car.category.toLowerCase().includes(input.toLowerCase()) ||
+        car.transmission.toLowerCase().includes(input.toLowerCase());
     })
     setFilteredCars(filtered)
   }
@@ -54,13 +62,19 @@ const Cars = () => {
   },[])
 
   useEffect(()=>{
+    if(cars.length > 0 && !isSearchData){
+      setFilteredCars(cars)
+    }
+  },[cars, isSearchData])
+
+  useEffect(()=>{
     cars.length > 0 && !isSearchData && applyFilter()
   },[input, cars])
 
   return (
     <div>
 
-      <motion.div 
+      <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
@@ -87,19 +101,37 @@ const Cars = () => {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.6, duration: 0.5 }}
 
-      className='px-6 md:px-16 lg:px-24 xl:px-32 mt-10'>
-        <p className='text-gray-500 xl:px-20 max-w-7xl mx-auto'>Showing {filteredCars.length} Cars</p>
+      className='px-4 md:px-8 lg:px-12 mt-10 max-w-[1920px] mx-auto'>
+        <p className='text-gray-500 mb-2 font-medium'>Showing {filteredCars.length} Cars</p>
 
-        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-4 xl:px-20 max-w-7xl mx-auto'>
-          {filteredCars.map((car, index)=> (
-            <motion.div key={index}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 * index, duration: 0.4 }}
-            >
-              <CarCardNew car={car}/>
-            </motion.div>
-          ))}
+        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 gap-y-10 mt-4'>
+          {filteredCars.length === 0 ? (
+            <div className="col-span-full py-20 flex flex-col items-center justify-center text-center">
+               <div className="p-6 bg-gray-50 rounded-full mb-4">
+                  <img src={assets.cautionIconColored} alt="" className="w-12 h-12 opacity-30" />
+               </div>
+               <h3 className="text-xl font-bold text-gray-800 mb-2">No cars yet in the system</h3>
+               <p className="text-gray-500 max-w-md">
+                 We couldn't find any cars matching your criteria or there are currently no vehicles available. Please try a different search or check back later.
+               </p>
+               <button
+                onClick={() => {setInput(''); window.location.href='/cars'}}
+                className="mt-6 px-8 py-2.5 bg-gray-900 text-white rounded-full font-medium hover:bg-black transition-all shadow-md"
+               >
+                 Clear All Filters
+               </button>
+            </div>
+          ) : (
+            filteredCars.map((car, index)=> (
+              <motion.div key={index}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 * index, duration: 0.4 }}
+              >
+                <CarCardNew car={car}/>
+              </motion.div>
+            ))
+          )}
         </div>
       </motion.div>
 

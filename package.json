@@ -12,7 +12,12 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.10",
     "axios": "^1.10.0",
+<<<<<<< HEAD
     "motion": "^12.43.0",
+=======
+    "lucide-react": "^0.564.0",
+    "motion": "^12.19.1",
+>>>>>>> f406f1c4c9145c2897c59d1c1ec620cdafed2363
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hot-toast": "^2.5.2",
